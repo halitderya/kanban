@@ -1,5 +1,5 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import {Lane} from "../../types/linetype"
+ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import {Card} from "../../types/cardtype"
 
 const API_BASE_URL = 'https://kanban-31191-default-rtdb.europe-west1.firebasedatabase.app';
 
@@ -14,24 +14,24 @@ const fetchData = async (path = '') => {
 };
 
 // Thunk to fetch all data
-export const fetchLaneDataThunk = createAsyncThunk(
-  'data/fetchAllLanes',
+ export const fetchCardDataThunk = createAsyncThunk(
+  'data/fetchAllCards',
   async (_, thunkAPI) => {
-    const data = await fetchData("/kanbanBoard/lanes");
+    const data = await fetchData("/kanbanBoard/cards");
     return data;
   },
   
 );
 
 // Thunk to fetch data by ID
-export const fetchLaneIDThunk = createAsyncThunk<
-Lane,
+export const fetchCardIDThunk = createAsyncThunk<
+Card,
 number
 
 >(
   'data/fetchById',
   async (id, thunkAPI) => {
-    const data = await fetchData(`/kanbanBoard/lanes/${id}`);
+    const data = await fetchData(`/kanbanBoard/cards/${id}`);
     return data;
   }
 );
@@ -41,34 +41,35 @@ number
 interface DataState {
   data: any;
   loading: 'idle' | 'pending' | 'succeeded' | 'failed';
-  specificData:any
+  dataWithID:any
 }
 
 const initialState = {
   data: null,
-  specificData:null,
+  dataWithID:null,
   loading: 'idle',
 } as DataState;
 
-export const laneSlice = createSlice({
-  name: 'laneData',
+export const cardSlice = createSlice({
+  name: 'cardData',
   initialState,
   reducers: {
-    // standard reducer logic, with auto-generated action types per reducer
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchLaneDataThunk.fulfilled, (state, action) => {
+      .addCase(fetchCardDataThunk.fulfilled, (state, action) => {
         // Set the state with the fetched data
         state.data = action.payload;
       })
-     .addCase(fetchLaneIDThunk.rejected, (state,action)=>{
-console.error(action.error)
+     .addCase(fetchCardDataThunk.rejected, (state,action)=>{
+
+
 
     })
-      .addCase(fetchLaneIDThunk.fulfilled, (state, action) => {
+      .addCase(fetchCardIDThunk.fulfilled, (state, action) => {
         // Set the state with the data fetched by ID
-        state.specificData = action.payload;
+        state.dataWithID = action.payload;
       });
   },
 });
+  
