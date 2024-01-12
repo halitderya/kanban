@@ -1,3 +1,5 @@
+import { Ref } from "react";
+
 export interface KanbanBoard {
     lanes: Lane[];
     board_settings: BoardSettings;
@@ -8,8 +10,9 @@ export interface Lane {
     name: string;
     active: boolean;
     user_created: boolean;
-    tasks: any[];  // Replace 'any' with a more specific type if tasks have a defined structure
+    tasks: any[];  
     description: string;
+    ref:Ref<any>;
 }
 
 export interface BoardSettings {

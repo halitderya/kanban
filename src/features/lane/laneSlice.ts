@@ -1,17 +1,28 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {Lane} from "../../types/linetype"
+import { onValue, ref ,get, child} from "firebase/database";
+import { db } from "../../utils/firebase";
+
 
 const API_BASE_URL = 'https://kanban-31191-default-rtdb.europe-west1.firebasedatabase.app';
 
 // Fetch data from the API
-const fetchData = async (path = '') => {
-  const url = `${API_BASE_URL}${path}/.json`;
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
+const fetchData = async (endpoint = '') => {
+  try {
+    const snapshot = await get(child(ref(db), endpoint));
+    if (snapshot.exists()) {
+      let data = snapshot.val();
+      return data; 
+    } else {
+      console.log("Data not available");
+      return null; 
+    }
+  } catch (error) {
+    console.error(error);
+    return null; 
   }
-  return response.json();
 };
+
 
 // Thunk to fetch all data
 export const fetchLaneDataThunk = createAsyncThunk(

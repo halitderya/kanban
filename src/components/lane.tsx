@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { Ref, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import CardComponent from "./card";
 import { Lane } from "@/types/linetype";
@@ -11,18 +11,35 @@ import {
 
 import { Card } from "@/types/cardtype";
 
-const LaneElement = (props: { lane: Lane }) => {
+const LaneElement = (props: { lane: Lane; ref: Ref<any> }) => {
   const dispatch = useDispatch<AppDispatch>();
   const cardsData: Card[] = useSelector(
     (state: RootState) => state.carddata.data
   );
 
+  const myRef = useRef(null);
+
   useEffect(() => {
     dispatch(fetchCardDataThunk());
   }, [dispatch]);
 
+  const dropped = (e: PointerEvent, c: Card) => {
+    console.log(
+      "clientx",
+      e.clientX,
+      "clienty",
+      e.clientY,
+      "cardid: ",
+      c.id,
+      "card lane from:",
+      c.lane
+    );
+  };
   return (
-    <div className="laneitem justify-between flex-col flex  w-full min-h-96 min-w-48 border-solid border-2 rounded-md border-indigo-600">
+    <div
+      className="laneitem justify-between flex-col flex  w-full min-h-96 min-w-48 border-solid border-2 rounded-md border-indigo-600"
+      ref={myRef}
+    >
       <div className="laneborder align-middle border-solid border-2 border-indigo-600">
         {props.lane.name}
       </div>
@@ -32,7 +49,15 @@ const LaneElement = (props: { lane: Lane }) => {
           cardsData.map((c) => {
             if (c.lane === props.lane.id) {
               return (
-                <motion.div dragMomentum={false} key={c.id} drag>
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  onDragEnd={(e) => {
+                    dropped(e as PointerEvent, c);
+                  }}
+                  dragMomentum={false}
+                  key={c.id}
+                  drag
+                >
                   <CardComponent card={c} />
                 </motion.div>
               );
