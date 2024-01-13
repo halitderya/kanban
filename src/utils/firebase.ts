@@ -1,5 +1,6 @@
+import { Card } from "@/types/cardtype";
 import { initializeApp } from "firebase/app";
-import { getDatabase } from "firebase/database";
+import { getDatabase, set,ref } from "firebase/database";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAvcM7f1RCGd8qmqZbbb1kMNdL0FDmE-4g",
@@ -12,4 +13,25 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
+
+
 export  const db = getDatabase(app);
+
+
+export const updateCard = (updatedCard:Card)=>{
+    set(ref(db, 'kanbanBoard/cards/' + updatedCard.id), updatedCard)
+      .then(() => {
+        // Data saved successfully!
+        console.log('updatred')
+      })
+      .catch((error) => {
+        // The write failed...
+        console.log('error update',error);
+        
+      });
+    
+}
+
+
+

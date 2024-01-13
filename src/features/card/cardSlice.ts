@@ -4,7 +4,7 @@ import { child, get, ref } from 'firebase/database';
 import { db } from "../../utils/firebase";
 
 
-const API_BASE_URL = 'https://kanban-31191-default-rtdb.europe-west1.firebasedatabase.app';
+//const API_BASE_URL = 'https://kanban-31191-default-rtdb.europe-west1.firebasedatabase.app';
 
 // Fetch data from the API
 const fetchData = async (endpoint = '') => {
