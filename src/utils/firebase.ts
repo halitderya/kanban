@@ -17,21 +17,3 @@ const app = initializeApp(firebaseConfig);
 
 
 export  const db = getDatabase(app);
-
-
-export const updateCard = (updatedCard:Card)=>{
-    set(ref(db, 'kanbanBoard/cards/' + updatedCard.id), updatedCard)
-      .then(() => {
-        // Data saved successfully!
-        console.log('updatred')
-      })
-      .catch((error) => {
-        // The write failed...
-        console.log('error update',error);
-        
-      });
-    
-}
-
-
-

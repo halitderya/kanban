@@ -1,0 +1,141 @@
+{
+    "kanbanBoard": {
+      "board_settings": {
+        "board_name": "Proje Takip",
+        "visibility": "private",
+        "background_color": "#f2f2f2",
+        "allow_comments": true,
+        "due_date_notifications": false
+      },
+      "lanes": [
+        {
+          "id": 1,
+          "name": "To Do",
+          "description": "Tasks that need to be done."
+        },
+        {
+          "id": 2,
+          "name": "In Progress",
+          "description": "Tasks that are currently being worked on."
+        },
+        {
+          "id": 3,
+          "name": "Review",
+          "description": "Tasks that are in the review phase."
+        },
+        {
+          "id": 4,
+          "name": "Testing",
+          "description": "Tasks that are undergoing testing."
+        },
+        {
+          "id": 5,
+          "name": "Deploy",
+          "description": "Tasks that are ready for deployment."
+        },
+        {
+          "id": 6,
+          "name": "On Hold",
+          "description": "Tasks that are on hold or waiting for further action."
+        },
+        {
+          "id": 7,
+          "name": "Completed",
+          "description": "Tasks that have been successfully completed."
+        }
+      ],
+      "cards": [
+        {
+          "id": 1,
+          "name": "Task Alpha",
+          "created": "2024-01-01 09:15:30",
+          "active": true,
+          "description": "This is a task for the alpha project.",
+          "owner": "Owner 5",
+          "lane_id": 1
+        },
+        {
+          "id": 2,
+          "name": "Bug Fixing",
+          "created": "2024-01-02 14:45:12",
+          "active": true,
+          "description": "Fix critical bugs in the software.",
+          "owner": "Owner 2",
+          "lane_id": 2
+        },
+        {
+          "id": 3,
+          "name": "Task Beta",
+          "created": "2024-01-03 10:30:40",
+          "active": false,
+          "description": "This is a task for the beta project.",
+          "owner": "Owner 7",
+          "lane_id": 3
+        },
+        {
+          "id": 4,
+          "name": "Task Gamma",
+          "created": "2024-01-04 16:22:55",
+          "active": true,
+          "description": "This is a task for the gamma project.",
+          "owner": "Owner 3",
+          "lane_id": 4
+        },
+        {
+          "id": 5,
+          "name": "Marketing Campaign",
+          "created": "2024-01-05 08:11:18",
+          "active": true,
+          "description": "Plan a marketing campaign for the new product launch.",
+          "owner": "Owner 1",
+          "lane_id": 5
+        },
+        {
+          "id": 6,
+          "name": "Task Delta",
+          "created": "2024-01-06 11:20:30",
+          "active": false,
+          "description": "This is a task for the delta project.",
+          "owner": "Owner 6",
+          "lane_id": 6
+        },
+        {
+          "id": 7,
+          "name": "Task Epsilon",
+          "created": "2024-01-07 13:05:42",
+          "active": true,
+          "description": "This is a task for the epsilon project.",
+          "owner": "Owner 4",
+          "lane_id": 7
+        },
+        {
+          "id": 8,
+          "name": "Task Zeta",
+          "created": "2024-01-08 17:17:01",
+          "active": true,
+          "description": "This is a task for the zeta project.",
+          "owner": "Owner 8",
+          "lane_id": 1
+        },
+        {
+          "id": 9,
+          "name": "Task Theta",
+          "created": "2024-01-09 09:45:28",
+          "active": false,
+          "description": "This is a task for the theta project.",
+          "owner": "Owner 9",
+          "lane_id": 2
+        },
+        {
+          "id": 10,
+          "name": "Task Iota",
+          "created": "2024-01-10 15:30:55",
+          "active": true,
+          "description": "This is a task for the iota project.",
+          "owner": "Owner 2",
+          "lane_id": 3
+        }
+      ]
+    }
+  }
+  

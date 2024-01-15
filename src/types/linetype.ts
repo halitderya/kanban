@@ -8,11 +8,7 @@ export interface KanbanBoard {
 export interface Lane {
     id: number;
     name: string;
-    active: boolean;
-    user_created: boolean;
-    tasks: any[];  
     description: string;
-    ref:Ref<any>;
 }
 
 export interface BoardSettings {

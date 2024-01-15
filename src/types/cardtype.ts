@@ -5,7 +5,7 @@ export interface Card {
     created:Date;
     active: boolean;
     description: string;
-    lane:number;
+    lane_id:number;
     owner:string;
     
 }

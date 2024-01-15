@@ -1,12 +1,22 @@
  import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {Card} from "../../types/cardtype"
-import { child, get, ref } from 'firebase/database';
+import { child, get, push, ref,set, update } from 'firebase/database';
 import { db } from "../../utils/firebase";
+import CardJson from "../../../public/card.json"
 
 
-//const API_BASE_URL = 'https://kanban-31191-default-rtdb.europe-west1.firebasedatabase.app';
+const populateAllCards = (data: Card[]) => {
 
-// Fetch data from the API
+  set(ref(db, 'kanbanBoard/cards'), data)
+    .then(() => {
+      console.log('Synchronization succeeded');
+    })
+    .catch((error) => {
+      console.error('Synchronization failed');
+    });
+};
+
+
 const fetchData = async (endpoint = '') => {
   try {
     const snapshot = await get(child(ref(db), endpoint));
@@ -21,10 +31,56 @@ const fetchData = async (endpoint = '') => {
     console.error(error);
     return null; 
   }
-
-
-
 };
+
+const updateCard= async (endpoint= '',updatedCard:Card)=>{
+  const snapshot = (await get(child(ref(db), endpoint))).key;
+
+console.log("snapshot key",snapshot,"newpostkey")
+
+  try{
+
+    update(ref(db, 'kanbanBoard/cards/' + endpoint), updatedCard)
+    .then(() => {
+      // Data saved successfully!
+      console.log("updatedcard: ",updatedCard)
+    })
+    .catch((error) => {
+      // The write failed...
+      console.error('error update',error);
+      
+    });
+  }
+  catch(error){
+
+    console.error(error);
+  }
+}
+
+
+
+export const updateCardDataThunk=createAsyncThunk(
+
+'data/updateCardData',
+async(updatedCard:Card,thunkAPI)=>{
+
+  await updateCard("/kanbanBoard/cards",updatedCard);
+  
+}
+); 
+
+
+export const populateAllCardsThunk = createAsyncThunk(
+  'data/populateAllCards',
+  async (_, thunkAPI) => {
+    const data = await fetchData("../../../public/card.json");
+
+
+    console.log("data",data)
+    await populateAllCards(data);
+  },
+);
+
 
 // Thunk to fetch all data
  export const fetchCardDataThunk = createAsyncThunk(
@@ -48,6 +104,7 @@ number
     return data;
   }
 );
+
 
 
 
@@ -82,6 +139,9 @@ export const cardSlice = createSlice({
       .addCase(fetchCardIDThunk.fulfilled, (state, action) => {
         // Set the state with the data fetched by ID
         state.dataWithID = action.payload;
+      }).addCase(updateCardDataThunk.fulfilled,(state,action)=>{
+
+        state.data=action.payload;
       });
   },
 });

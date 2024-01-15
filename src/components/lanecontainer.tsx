@@ -14,6 +14,7 @@ import {
   LanePositionState,
   addLane,
 } from "@/features/lanePosition/lanePositionSlice";
+import { populateAllCardsThunk } from "@/features/card/cardSlice";
 
 const Lanecontainer = () => {
   const lanedata: Lane[] = useSelector(
@@ -47,26 +48,22 @@ const Lanecontainer = () => {
     });
   }, [dispatch]);
 
-  function gerdata(event: any): void {
-    console.log("laneposition: ", lanePositionData, "lanedata: ", lanedata);
+  function getcards() {
+    dispatch(populateAllCardsThunk()).then((action) => {
+      console.log("action from populateallcardsthunk", action);
+    });
   }
 
   return (
     <>
       <div className="w-full justify-between h-max-96 gap-6 flex flex-row">
         {lanedata ? (
-          lanedata.map((l) => (
-            <LaneElement
-              key={l.id}
-              lane={l}
-              ref={(el) => (laneRefs.current[l.id] = el)}
-            ></LaneElement>
-          ))
+          lanedata.map((l) => <LaneElement key={l.id} lane={l}></LaneElement>)
         ) : (
           <p>Data is loading or not available.</p>
         )}
       </div>
-      <button onClick={gerdata}>Click to Get</button>
+      <button onClick={getcards}>Click to fetch cards</button>
     </>
   );
 };
