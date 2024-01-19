@@ -1,11 +1,11 @@
 
 export interface Card {
-    id: number;
+    id?: string;
     name: string;
     created:Date;
     active: boolean;
     description: string;
-    lane_id:number;
+    lane:number;
     owner:string;
     
 }

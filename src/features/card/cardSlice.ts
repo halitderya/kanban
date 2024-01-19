@@ -1,27 +1,19 @@
  import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {Card} from "../../types/cardtype"
-import { child, get, push, ref,set, update } from 'firebase/database';
+import { child, get, getDatabase, push, ref,set, update } from 'firebase/database';
 import { db } from "../../utils/firebase";
-import CardJson from "../../../public/card.json"
+import { v4 as uuid } from 'uuid';
 
 
-const populateAllCards = (data: Card[]) => {
-
-  set(ref(db, 'kanbanBoard/cards'), data)
-    .then(() => {
-      console.log('Synchronization succeeded');
-    })
-    .catch((error) => {
-      console.error('Synchronization failed');
-    });
-};
 
 
 const fetchData = async (endpoint = '') => {
   try {
+
     const snapshot = await get(child(ref(db), endpoint));
     if (snapshot.exists()) {
       let data = snapshot.val();
+
       return data; 
     } else {
       console.log("Data not available");
@@ -33,54 +25,63 @@ const fetchData = async (endpoint = '') => {
   }
 };
 
-const updateCard= async (endpoint= '',updatedCard:Card)=>{
-  const snapshot = (await get(child(ref(db), endpoint))).key;
+const updateCard = async (endpoint = "", updatedCard: Card) => {
+  const dbRef = ref(db, endpoint + updatedCard.id);
 
-console.log("snapshot key",snapshot,"newpostkey")
-
-  try{
-
-    update(ref(db, 'kanbanBoard/cards/' + endpoint), updatedCard)
-    .then(() => {
-      // Data saved successfully!
-      console.log("updatedcard: ",updatedCard)
-    })
-    .catch((error) => {
-      // The write failed...
-      console.error('error update',error);
-      
-    });
+  try {
+    await update(dbRef, { ...updatedCard });
+    return updatedCard; 
+  } catch (error) {
+    console.error('error update', error);
+    return null; 
   }
-  catch(error){
+};
 
-    console.error(error);
-  }
-}
 
 
 
 export const updateCardDataThunk=createAsyncThunk(
 
 'data/updateCardData',
-async(updatedCard:Card,thunkAPI)=>{
+async(updatedCard:Card ,thunkAPI)=>{
 
-  await updateCard("/kanbanBoard/cards",updatedCard);
-  
+ const data=  await updateCard("kanbanBoard/cards/",updatedCard);
+  return (data as Card);
 }
 ); 
-
+interface Updates {
+  [key: string]: Card;
+}
 
 export const populateAllCardsThunk = createAsyncThunk(
   'data/populateAllCards',
   async (_, thunkAPI) => {
-    const data = await fetchData("../../../public/card.json");
+    const data: Card[] = await fetch("/card.json").then((response) => response.json());
+    
+    const db = getDatabase();
+    const updates: Updates = {};
+    data.forEach((card: Card) => {
+      // Generate a new key for each card
+      const newCardKey = push(child(ref(db), 'kanbanBoard/cards')).key;
 
+      if (newCardKey === null) {
+        console.error('Failed to generate a new key for a card');
+        return; // Skip this iteration
+      }
 
-    console.log("data",data)
-    await populateAllCards(data);
+      card.id = newCardKey;
+      updates['/kanbanBoard/cards/' + newCardKey] = card;
+    });
+
+    return update(ref(db), updates)
+      .then(() => {
+        console.log('Synchronization succeeded');
+      })
+      .catch((error) => {
+        console.error('Synchronization failed', error);
+      });
   },
 );
-
 
 // Thunk to fetch all data
  export const fetchCardDataThunk = createAsyncThunk(
@@ -109,9 +110,9 @@ number
 
 
 interface DataState {
-  data: any;
+  data: { [key: string]: Card } | null;
   loading: 'idle' | 'pending' | 'succeeded' | 'failed';
-  dataWithID:any
+  dataWithID:Card | null;
 }
 
 const initialState = {
@@ -133,16 +134,20 @@ export const cardSlice = createSlice({
       })
      .addCase(fetchCardDataThunk.rejected, (state,action)=>{
 
-
-
     })
       .addCase(fetchCardIDThunk.fulfilled, (state, action) => {
-        // Set the state with the data fetched by ID
         state.dataWithID = action.payload;
-      }).addCase(updateCardDataThunk.fulfilled,(state,action)=>{
-
-        state.data=action.payload;
+      }) .addCase(updateCardDataThunk.fulfilled, (state, action) => {
+        const updatedCard = action.payload;
+        if (updatedCard && updatedCard.id) {
+          if (!state.data) {
+            state.data = { [updatedCard.id]: updatedCard };
+          } else {
+            state.data[updatedCard.id] = updatedCard;
+          }
+        }
       });
   },
 });
+
   
