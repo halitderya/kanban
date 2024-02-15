@@ -1,4 +1,4 @@
-import React, { Ref, useEffect, useRef } from "react";
+import React, { Ref, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import CardComponent from "./card";
 import { Lane } from "@/types/linetype";
@@ -10,9 +10,11 @@ import {
 } from "@/features/card/cardSlice";
 
 import { Card } from "@/types/cardtype";
-/* import { updateCard } from "@/utils/firebase";
- */
+
 const LaneElement = (props: { lane: Lane }) => {
+  const [loaded, setLoaded] = useState(false);
+  const [initialPosition, setInitialPosition] = useState({ x: 0, y: 0 });
+
   const dispatch = useDispatch<AppDispatch>();
   const cardsData: Card[] = useSelector(
     (state: RootState) => state.carddata.data
@@ -20,8 +22,11 @@ const LaneElement = (props: { lane: Lane }) => {
 
   useEffect(() => {
     dispatch(fetchCardDataThunk());
-  }, []);
+  }, [loaded]);
 
+  const dragStarted = (e: PointerEvent, c: Card) => {
+    setInitialPosition({ x: e.clientX, y: e.clientY });
+  };
   const dropped = (e: PointerEvent, c: Card) => {
     const theElement = window.document
       .elementsFromPoint(e.clientX, e.clientY)
@@ -30,11 +35,14 @@ const LaneElement = (props: { lane: Lane }) => {
     const laneId = theElement?.id;
     if (!laneId) {
       console.log("moved to nowhere");
+
+      setLoaded(!loaded);
     } else {
       const updated = { ...c, lane: Number(laneId) };
 
       dispatch(updateCardDataThunk(updated)).then((action) => {
         console.log("action: ", action);
+        setLoaded(!loaded);
       });
     }
   };
@@ -43,6 +51,7 @@ const LaneElement = (props: { lane: Lane }) => {
     console.log("true");
     console.log(cardsData);
   }
+
   return (
     <>
       <div
@@ -63,6 +72,9 @@ const LaneElement = (props: { lane: Lane }) => {
                     whileHover={{ scale: 1.1 }}
                     onDragEnd={(e) => {
                       dropped(e as PointerEvent, c);
+                    }}
+                    onDragStart={(e) => {
+                      dragStarted(e as PointerEvent, c);
                     }}
                     onClick={(e) => {
                       clicked(e as any, c);
