@@ -1,5 +1,5 @@
 import React, { Ref, useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useAnimationControls } from "framer-motion";
 import CardComponent from "./card";
 import { Lane } from "@/types/linetype";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,8 +12,7 @@ import {
 import { Card } from "@/types/cardtype";
 
 const LaneElement = (props: { lane: Lane }) => {
-  const [loaded, setLoaded] = useState(false);
-  const [initialPosition, setInitialPosition] = useState({ x: 0, y: 0 });
+  const controls = useAnimationControls();
 
   const dispatch = useDispatch<AppDispatch>();
   const cardsData: Card[] = useSelector(
@@ -22,11 +21,8 @@ const LaneElement = (props: { lane: Lane }) => {
 
   useEffect(() => {
     dispatch(fetchCardDataThunk());
-  }, [loaded]);
+  }, []);
 
-  const dragStarted = (e: PointerEvent, c: Card) => {
-    setInitialPosition({ x: e.clientX, y: e.clientY });
-  };
   const dropped = (e: PointerEvent, c: Card) => {
     const theElement = window.document
       .elementsFromPoint(e.clientX, e.clientY)
@@ -35,30 +31,20 @@ const LaneElement = (props: { lane: Lane }) => {
     const laneId = theElement?.id;
     if (!laneId) {
       console.log("moved to nowhere");
-
-      setLoaded(!loaded);
+      controls.start({ x: 0, y: 0 });
     } else {
       const updated = { ...c, lane: Number(laneId) };
-
-      dispatch(updateCardDataThunk(updated)).then((action) => {
-        console.log("action: ", action);
-        setLoaded(!loaded);
-      });
+      controls.start({ x: 0, y: 0 });
+      dispatch(updateCardDataThunk(updated)).then((action) => {});
     }
   };
   const clicked = (e: any, c: Card) => {};
-  if (cardsData) {
-    console.log("true");
-    console.log(cardsData);
-  }
 
   return (
     <>
       <div
         id={props.lane.id + ""}
         className="laneitem justify-between flex-col flex  w-full min-h-96 min-w-48 border-solid border-2 rounded-md border-indigo-600"
-        /*       ref={myRef}
-         */
       >
         <div className="laneborder align-middle border-solid border-2 border-indigo-600">
           {props.lane.name} {"id " + props.lane.id}
@@ -70,11 +56,9 @@ const LaneElement = (props: { lane: Lane }) => {
                 return (
                   <motion.div
                     whileHover={{ scale: 1.1 }}
+                    animate={controls}
                     onDragEnd={(e) => {
                       dropped(e as PointerEvent, c);
-                    }}
-                    onDragStart={(e) => {
-                      dragStarted(e as PointerEvent, c);
                     }}
                     onClick={(e) => {
                       clicked(e as any, c);

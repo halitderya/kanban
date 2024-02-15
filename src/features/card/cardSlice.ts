@@ -2,7 +2,6 @@
 import {Card} from "../../types/cardtype"
 import { child, get, getDatabase, push, ref,set, update } from 'firebase/database';
 import { db } from "../../utils/firebase";
-import { v4 as uuid } from 'uuid';
 
 
 
@@ -73,10 +72,12 @@ export const populateAllCardsThunk = createAsyncThunk(
       updates['/kanbanBoard/cards/' + newCardKey] = card;
     });
 
-    return update(ref(db), updates)
+    return await update(ref(db), updates)
       .then(() => {
         console.log('Synchronization succeeded');
+
       })
+
       .catch((error) => {
         console.error('Synchronization failed', error);
       });
@@ -130,14 +131,17 @@ export const cardSlice = createSlice({
     builder
       .addCase(fetchCardDataThunk.fulfilled, (state, action) => {
         // Set the state with the fetched data
+        
         state.data = action.payload;
       })
      .addCase(fetchCardDataThunk.rejected, (state,action)=>{
 
     })
-      .addCase(fetchCardIDThunk.fulfilled, (state, action) => {
-        state.dataWithID = action.payload;
-      }) .addCase(updateCardDataThunk.fulfilled, (state, action) => {
+    .addCase(fetchCardIDThunk.fulfilled, (state, action) => {
+        state.dataWithID = action.payload;}) 
+    .addCase(updateCardDataThunk.fulfilled, (state, action) => {
+
+
         const updatedCard = action.payload;
         if (updatedCard && updatedCard.id) {
           if (!state.data) {
@@ -146,7 +150,14 @@ export const cardSlice = createSlice({
             state.data[updatedCard.id] = updatedCard;
           }
         }
-      });
+      })
+    .addCase(populateAllCardsThunk.fulfilled, (state, action) => {
+
+        
+      })
+      
+      
+      ;
   },
 });
 

@@ -74,7 +74,7 @@ export const laneSlice = createSlice({
         state.data = action.payload;
       })
      .addCase(fetchLaneIDThunk.rejected, (state,action)=>{
-console.error(action.error)
+      console.error(action.error)
 
     })
       .addCase(fetchLaneIDThunk.fulfilled, (state, action) => {

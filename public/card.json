@@ -16,6 +16,33 @@
     "description": "Fix critical bugs in the software.",
     "lane": 1,
     "owner": "Owner 2"
+  },
+  {
+    "id": "",
+    "name": "Customer Feedback",
+    "created": "2024-01-06 11:20:30",
+    "active": false,
+    "description": "Review and respond to customer feedback.",
+    "lane": 3,
+    "owner": "Owner 6"
+  },
+  {
+    "id": "",
+    "name": "Financial Analysis",
+    "created": "2024-01-07 13:05:42",
+    "active": true,
+    "description": "Analyze company's financial performance and prepare reports.",
+    "lane": 4,
+    "owner": "Owner 4"
+  },
+  {
+    "id": "",
+    "name": "Hiring Process",
+    "created": "2024-01-08 17:17:01",
+    "active": true,
+    "description": "Manage the hiring process and onboard new employees.",
+    "lane": 5,
+    "owner": "Owner 8"
   }
  
 ]
