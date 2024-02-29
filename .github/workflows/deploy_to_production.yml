@@ -22,16 +22,17 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Install lftp
-        run: sudo apt-get update && sudo apt-get install lftp -y
+      - name: Install sshpass
+        run: sudo apt-get update && sudo apt-get install sshpass -y
 
-      - name: FTP Deploy
+      - name: SFTP Deploy
         run: |
-          lftp -c "set ftp:ssl-allow no;
-                   open '$FTP_HOST';
-                   user '$FTP_USERNAME' '$FTP_PASSWORD';
-                   mirror --reverse --verbose --delete ./dist $FTP_DIRECTORY; 
-                   bye"
+          sshpass -p $FTP_PASSWORD sftp -oBatchMode=no -b - $FTP_USERNAME@$FTP_HOST << !
+            cd $FTP_DIRECTORY
+            lcd ./dist
+            mput *
+            bye
+          !
         env:
           FTP_HOST: ${{ secrets.FTP_HOST }}
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
