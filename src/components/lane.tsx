@@ -44,10 +44,10 @@ const LaneElement = (props: { lane: Lane }) => {
     <>
       <div
         id={props.lane.id + ""}
-        className="laneitem font-sans justify-between flex-col  flex  w-full w-min-48 border-solid border-4 rounded-md border-gray-300 shadow-lg"
+        className="laneitem font-sans  justify-between flex-col  flex  w-full w-min-48 border-solid border-4 rounded-md border-gray-300 shadow-lg"
       >
         <div className="laneborder mb-8 font-mono p-2 align-middle  ">
-          {props.lane.name}
+          {props.lane.name} font
         </div>
         <hr></hr>
         <div className="flex flex-col w-full  p-2 justify-start">
