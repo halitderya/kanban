@@ -23,6 +23,8 @@ const Lanecontainer = () => {
   return (
     <>
       <div className="w-full font-mono  justify-between  gap-6 flex flex-row ">
+        {" "}
+        -
         {lanedata ? (
           lanedata.map((l) => <LaneElement key={l.id} lane={l}></LaneElement>)
         ) : (

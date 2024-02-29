@@ -15,7 +15,7 @@ const LaneElement = (props: { lane: Lane }) => {
   const controls = useAnimationControls();
 
   const dispatch = useDispatch<AppDispatch>();
-  const cardsData: Card[] = useSelector(
+  const cardsData: { [key: string]: Card } | null = useSelector(
     (state: RootState) => state.carddata.data
   );
 
