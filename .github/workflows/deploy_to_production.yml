@@ -22,19 +22,12 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Install sshpass
-        run: sudo apt-get update && sudo apt-get install sshpass -y
-
-      - name: SFTP Deploy
-        run: |
-          sshpass -p $FTP_PASSWORD sftp -oBatchMode=no -b - $FTP_USERNAME@$FTP_HOST << !
-            cd $FTP_DIRECTORY
-            lcd ./dist
-            mput *
-            bye
-          !
-        env:
-          FTP_HOST: ${{ secrets.FTP_HOST }}
-          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
-          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-          FTP_DIRECTORY: /kanban
+      - name: Upload to SFTP
+        uses: SamKirkland/FTP-Deploy-Action@4.2.0
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /kanban
+          local-dir: ./dist
+          protocol: sftp
