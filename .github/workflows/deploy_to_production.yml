@@ -30,4 +30,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: /kanban
           local-dir: ./dist
-          protocol: sftp
+          protocol: ftps
