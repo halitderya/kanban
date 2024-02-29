@@ -23,11 +23,11 @@ jobs:
         run: npm run build
 
       - name: Upload to SFTP
-        uses: SamKirkland/FTP-Deploy-Action@4.2.0
+        uses: Dylan700/sftp-upload-action@latest
         with:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /kanban/
-          local-dir: ./dist/
-          protocol: ftps
+          port: 22
+          uploads: |
+            ./dist/ => /kanban
