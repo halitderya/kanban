@@ -8,5 +8,6 @@ export interface Card {
     lane:number;
     owner:string;
     
+    
 }
 

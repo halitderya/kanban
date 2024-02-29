@@ -44,12 +44,13 @@ const LaneElement = (props: { lane: Lane }) => {
     <>
       <div
         id={props.lane.id + ""}
-        className="laneitem justify-between flex-col flex  w-full min-h-96 min-w-48 border-solid border-2 rounded-md border-indigo-600"
+        className="laneitem font-sans justify-between flex-col  flex  w-full w-min-48 border-solid border-4 rounded-md border-gray-300 shadow-lg"
       >
-        <div className="laneborder align-middle border-solid border-2 border-indigo-600">
-          {props.lane.name} {"id " + props.lane.id}
+        <div className="laneborder mb-8 font-mono p-2 align-middle  ">
+          {props.lane.name}
         </div>
-        <div className="flex flex-col w-full justify-end">
+        <hr></hr>
+        <div className="flex flex-col w-full  p-2 justify-start">
           {cardsData &&
             Object.values(cardsData).map((c) => {
               if (c.lane === props.lane.id) {

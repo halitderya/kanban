@@ -3,11 +3,11 @@ import React from "react";
 
 const CardComponent = (props: { card: Card }) => {
   return (
-    <div className="w-full min-h-24 border-solid border-2 border-indigo-600">
-      name: {props.card?.name}
+    <div className="w-full min-h-24 border-solid border-4 rounded-lg p-2 my-1 shadow-lg  border-gray-400 ">
+      <div className="font-mono">{props.card?.name}</div>
+      <br></br>
       <div>{props.card?.description}</div>
       <div>{props.card?.owner}</div>
-      <div>{props.card?.id}</div>
     </div>
   );
 };
