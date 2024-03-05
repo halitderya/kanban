@@ -41,8 +41,8 @@ jobs:
           password: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            docker image pull halitderya/kanban:${{ steps.set_version.outputs.appver }}-64
             docker container stop kanban
             docker container rm kanban
-            docker rmi halitderya/kanban:${{ steps.set_version.outputs.appver }}-64 --force
+            docker rmi $(docker images halitderya/kanban -aq) --force
+            docker image pull halitderya/kanban:${{ steps.set_version.outputs.appver }}-64
             docker container run -d --name kanban -p 80:3000 halitderya/kanban:${{ steps.set_version.outputs.appver }}-64
