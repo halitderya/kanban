@@ -35,6 +35,7 @@ const LaneElement = (props: { lane: Lane }) => {
     } else {
       const updated = { ...c, lane: Number(laneId) };
       controls.start({ x: 0, y: 0 });
+
       dispatch(updateCardDataThunk(updated)).then((action) => {});
     }
   };
@@ -44,18 +45,23 @@ const LaneElement = (props: { lane: Lane }) => {
     <>
       <div
         id={props.lane.id + ""}
-        className="laneitem font-sans  justify-between flex-col  flex  w-full w-min-48 border-solid border-4 rounded-md border-gray-300 shadow-lg"
+        className="laneitem font-sans justify-between flex-col  flex max-w-64  min-w-56 border-solid border-4 rounded-md border-gray-300 shadow-lg"
       >
-        <div className="laneborder mb-8 font-mono p-2 align-middle  ">
+        <div className="laneborder mb-8  font-mono p-2 align-middle  ">
           {props.lane.name}
         </div>
         <hr></hr>
-        <div className="flex flex-col w-full  p-2 justify-start">
+
+        <div className="flex  flex-col w-full  p-2 justify-start">
           {cardsData &&
             Object.values(cardsData).map((c) => {
               if (c.lane === props.lane.id) {
                 return (
                   <motion.div
+                    className="motiondiv border-none"
+                    dragElastic={0.1}
+                    whileDrag={{ rotate: 10 }}
+                    z-index="50"
                     whileHover={{ scale: 1.1 }}
                     animate={controls}
                     onDragEnd={(e) => {

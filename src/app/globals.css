@@ -27,3 +27,14 @@ body {
     @apply flex justify-center content-center min-w-16 grow-0 h-full items-center hover:rounded-md hover:bg-gray-200;
   }
 }
+@layer base {
+  body {
+    @apply dark:bg-gray-600 bg-slate-50;
+  }
+  .card {
+    @apply dark:bg-gray-400 bg-slate-50;
+  }
+  .laneitem {
+    @apply hover:bg-orange-400;
+  }
+}

@@ -3,6 +3,7 @@ import { store } from "./store";
 import { Provider } from "react-redux";
 import "./globals.css";
 import { Inter, Roboto_Mono } from "next/font/google";
+import { ThemeProvider } from "next-themes";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,9 +23,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${roboto_mono.variable}`}>
-      <body>
-        <Provider store={store}>{children}</Provider>
+    <html
+      suppressHydrationWarning
+      lang="en"
+      className={`${inter.variable} ${roboto_mono.variable}`}
+    >
+      <body className=" ">
+        <Provider store={store}>
+          <ThemeProvider attribute="class">{children}</ThemeProvider>
+        </Provider>
       </body>
     </html>
   );

@@ -45,4 +45,4 @@ jobs:
             docker container rm kanban
             docker rmi $(docker images halitderya/kanban -aq) --force
             docker image pull halitderya/kanban:${{ steps.set_version.outputs.appver }}-64
-            docker container run -d --name kanban -p 80:3000 halitderya/kanban:${{ steps.set_version.outputs.appver }}-64
+            docker container run -d --name kanban -p 3000:3000 halitderya/kanban:${{ steps.set_version.outputs.appver }}-64
