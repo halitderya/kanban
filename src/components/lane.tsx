@@ -10,8 +10,9 @@ import {
 } from "@/features/card/cardSlice";
 
 import { Card } from "@/types/cardtype";
+import CardModal from "./cardmodal";
 
-const LaneElement = (props: { lane: Lane }) => {
+const LaneElement = (props: { lane: Lane; setShow: boolean }) => {
   const controls = useAnimationControls();
 
   const dispatch = useDispatch<AppDispatch>();
@@ -45,14 +46,14 @@ const LaneElement = (props: { lane: Lane }) => {
     <>
       <div
         id={props.lane.id + ""}
-        className="laneitem font-sans justify-between flex-col  flex max-w-64  min-w-56 border-solid border-4 rounded-md border-gray-300 shadow-lg"
+        className="laneitem font-sans justify-between flex-col flex max-w-64  min-w-56 border-solid border-4 rounded-md border-gray-300 shadow-lg"
       >
-        <div className="laneborder mb-8  font-mono p-2 align-middle  ">
+        <div className="laneheader mb-8  font-mono p-2 align-middle  ">
           {props.lane.name}
         </div>
         <hr></hr>
 
-        <div className="flex  flex-col w-full  p-2 justify-start">
+        <div className=" cardcontainer flex  flex-col w-full  p-2 justify-start">
           {cardsData &&
             Object.values(cardsData).map((c) => {
               if (c.lane === props.lane.id) {
@@ -75,7 +76,11 @@ const LaneElement = (props: { lane: Lane }) => {
                     drag
                   >
                     {" "}
-                    <CardComponent key={c.id} card={c} />
+                    <CardComponent
+                      showModal={props.setShow}
+                      key={c.id}
+                      card={c}
+                    />
                   </motion.div>
                 );
               }

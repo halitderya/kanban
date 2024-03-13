@@ -1,4 +1,3 @@
-import { Card } from "@/types/cardtype";
 import { initializeApp } from "firebase/app";
 import { getDatabase, set,ref } from "firebase/database";
 

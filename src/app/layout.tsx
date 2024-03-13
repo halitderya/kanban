@@ -26,9 +26,9 @@ export default function RootLayout({
     <html
       suppressHydrationWarning
       lang="en"
-      className={`${inter.variable} ${roboto_mono.variable}`}
+      className={`${inter.variable} ${roboto_mono.variable} `}
     >
-      <body className=" ">
+      <body className="w-full h-full overflow-hidden">
         <Provider store={store}>
           <ThemeProvider attribute="class">{children}</ThemeProvider>
         </Provider>

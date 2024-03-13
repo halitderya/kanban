@@ -1,4 +1,4 @@
- import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+ import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {Card} from "../../types/cardtype"
 import { child, get, getDatabase, push, ref,set, update } from 'firebase/database';
 import { db } from "../../utils/firebase";
@@ -24,7 +24,7 @@ const fetchData = async (endpoint = '') => {
   }
 };
 
-const updateCard = async (endpoint = "", updatedCard: Card) => {
+export const updateCard = async (endpoint = "", updatedCard: Card) => {
   const dbRef = ref(db, endpoint + updatedCard.id);
 
   try {
@@ -107,7 +107,11 @@ number
   }
 );
 
-
+const initialState = {
+  data: null,
+  dataWithID:null,
+  loading: 'idle',
+} as DataState;
 
 
 interface DataState {
@@ -116,11 +120,6 @@ interface DataState {
   dataWithID:Card | null;
 }
 
-const initialState = {
-  data: null,
-  dataWithID:null,
-  loading: 'idle',
-} as DataState;
 
 export const cardSlice = createSlice({
   name: 'cardData',

@@ -21,7 +21,7 @@ const Header = () => {
   }
 
   return (
-    <div className=" header flex cursor-pointer items-center mb-4 h-12 shadow-xl gap-x-8 ">
+    <div className=" header grow-1 flex cursor-pointer items-center mb-4  shadow-xl gap-x-8 ">
       <div className="topbarmenuicons">One</div>
       <div className="flex grow   ">
         <CiSearch size={25} />

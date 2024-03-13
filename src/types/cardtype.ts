@@ -7,7 +7,13 @@ export interface Card {
     description: string;
     lane:number;
     owner:string;
+    comments?:Comment[];
     
-    
+}
+export interface Comment{
+
+
+    comment:string;
+    date:Date;
 }
 
