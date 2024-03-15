@@ -12,7 +12,7 @@ import {
 import { Card } from "@/types/cardtype";
 import CardModal from "./cardmodal";
 
-const LaneElement = (props: { lane: Lane; setShow: boolean }) => {
+const LaneElement = (props: { lane: Lane; setShow: any }) => {
   const controls = useAnimationControls();
 
   const dispatch = useDispatch<AppDispatch>();
@@ -34,7 +34,14 @@ const LaneElement = (props: { lane: Lane; setShow: boolean }) => {
       console.log("moved to nowhere");
       controls.start({ x: 0, y: 0 });
     } else {
-      const updated = { ...c, lane: Number(laneId) };
+      let updated;
+      c.lane === Number(8)
+        ? (updated = { ...c, lane: Number(laneId), active: true })
+        : (updated = { ...c, lane: Number(laneId), active: false });
+
+      // const updated = { ...c, lane: Number(laneId)  };
+      console.log(updated);
+
       controls.start({ x: 0, y: 0 });
 
       dispatch(updateCardDataThunk(updated)).then((action) => {});
@@ -44,13 +51,23 @@ const LaneElement = (props: { lane: Lane; setShow: boolean }) => {
 
   return (
     <>
-      <div
+      <motion.div
         id={props.lane.id + ""}
         className="laneitem font-sans justify-between flex-col flex max-w-64  min-w-56 border-solid border-4 rounded-md border-gray-300 shadow-lg"
       >
-        <div className="laneheader mb-8  font-mono p-2 align-middle  ">
-          {props.lane.name}
+        <div className=" flex flex-col justify-between w-full items-center laneheader mb-2 font-mono p-2 ">
+          <label className=" mb-4 text-center">{props.lane.name}</label>
+
+          <motion.img
+            onTap={() => {
+              props.setShow(true);
+            }}
+            alt="Add New Card"
+            whileHover={{ scale: 2.5 }}
+            src="/svg/add_icon.svg"
+          ></motion.img>
         </div>
+
         <hr></hr>
 
         <div className=" cardcontainer flex  flex-col w-full  p-2 justify-start">
@@ -87,7 +104,7 @@ const LaneElement = (props: { lane: Lane; setShow: boolean }) => {
               return null;
             })}
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };

@@ -11,37 +11,64 @@
         {
           "id": 1,
           "name": "To Do",
-          "description": "Tasks that need to be done."
+          "description": "Tasks that need to be done.",
+          "active": true,
+          "default": true
         },
         {
           "id": 2,
           "name": "In Progress",
-          "description": "Tasks that are currently being worked on."
+          "description": "Tasks that are currently being worked on.",
+          "active": true,
+          "default": true
         },
         {
           "id": 3,
           "name": "Review",
           "description": "Tasks that are in the review phase."
+          ,
+          "active": true,
+          "default": true
         },
         {
           "id": 4,
           "name": "Testing",
           "description": "Tasks that are undergoing testing."
+          ,
+          "active": true,
+          "default": true
         },
         {
           "id": 5,
           "name": "Deploy",
           "description": "Tasks that are ready for deployment."
+          ,
+          "active": true,
+          "default": true
         },
         {
           "id": 6,
           "name": "On Hold",
           "description": "Tasks that are on hold or waiting for further action."
+          ,
+          "active": true,
+          "default": true
         },
         {
           "id": 7,
           "name": "Completed",
           "description": "Tasks that have been successfully completed."
+          ,
+          "active": true,
+          "default": true
+        },
+        {
+          "id": 8,
+          "name": "Archived",
+          "description": "Tasks that are no longer active and have been archived."
+          ,
+          "active": true,
+          "default": true
         }
       ],
       "cards": [

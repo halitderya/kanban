@@ -35,7 +35,7 @@ const ThemeSwitch = () => {
       <motion.div
         initial={false}
         animate={isChecked ? "checked" : "unchecked"}
-        className="relative w-24 h-10 flex items-center flex-shrink-0 ml-4 p-1 rounded-full duration-300 ease-in-out cursor-pointer"
+        className="relative w-24 h-10 flex items-center flex-shrink-0 ml-4 p-1 rounded-full cursor-pointer"
         variants={backgroundVariants}
         onClick={toggleTheme}
       >

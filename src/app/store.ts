@@ -9,7 +9,7 @@ export const store = configureStore({
    // counter: counterSlice,
     lanedata: laneSlice.reducer, 
      carddata: cardSlice.reducer, 
-     selectedcard: selectedCardSlice.reducer
+   selectedcard: selectedCardSlice.reducer
  
   },
   middleware: (getDefaultMiddleware) =>

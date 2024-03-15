@@ -3,14 +3,15 @@ export interface Card {
     id?: string;
     name: string;
     created:Date;
-    active: boolean;
-    description: string;
+    archived: boolean;
+    description?: string;
     lane:number;
+    lane_was:number;
     owner:string;
-    comments?:Comment[];
+    comments?:CommentType[];
     
 }
-export interface Comment{
+export interface CommentType{
 
 
     comment:string;

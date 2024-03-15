@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../app/store";
 import { Lane } from "@/types/linetype";
 import LaneElement from "@/components/lane";
-import { Card } from "@/types/cardtype";
+import { motion } from "framer-motion";
 
 const Lanecontainer = (props: { show: any }) => {
   const lanedata: Lane[] = useSelector(
@@ -20,8 +20,8 @@ const Lanecontainer = (props: { show: any }) => {
 
   return (
     <>
-      <div className="h-lvh overflow-auto  grow-0">
-        <div className="lanecontainer box-border   font-mono flex-nowrap justify-between gap-6 flex flex-column ">
+      <motion.div layoutScroll className="h-full  ">
+        <div className="lanecontainer box-border font-mono flex-nowrap justify-between gap-6 flex flex-column ">
           {lanedata ? (
             lanedata.map((l) => (
               <LaneElement
@@ -34,7 +34,7 @@ const Lanecontainer = (props: { show: any }) => {
             <p>Data is loading or not available.</p>
           )}
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };

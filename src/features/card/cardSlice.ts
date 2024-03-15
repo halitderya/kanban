@@ -44,10 +44,16 @@ export const updateCardDataThunk=createAsyncThunk(
 'data/updateCardData',
 async(updatedCard:Card ,thunkAPI)=>{
 
+  
  const data=  await updateCard("kanbanBoard/cards/",updatedCard);
   return (data as Card);
 }
 ); 
+
+
+
+
+
 interface Updates {
   [key: string]: Card;
 }
