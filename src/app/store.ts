@@ -1,8 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
-//import counterSlice from '../features/counter/counterSlice';
 import {laneSlice} from '@/features/lane/laneSlice'; 
  import { cardSlice } from '@/features/card/cardSlice';
 import { selectedCardSlice } from '@/features/card/selectedCardSlice';
+import { sortMiddleware } from '@/features/lane/sortingMiddleware';
 
 export const store = configureStore({
   reducer: {
@@ -13,7 +13,7 @@ export const store = configureStore({
  
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(),
+    getDefaultMiddleware().concat(sortMiddleware), // Add your sortMiddleware here
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

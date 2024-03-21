@@ -7,8 +7,14 @@ export interface KanbanBoard {
 
 export interface Lane {
     id: number;
+    dbid:string;
     name: string;
     description: string;
+    order:number
+    active:boolean;
+    default:boolean;
+
+
 }
 
 export interface BoardSettings {

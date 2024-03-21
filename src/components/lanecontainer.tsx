@@ -16,20 +16,18 @@ const Lanecontainer = (props: { show: any }) => {
 
   useEffect(() => {
     dispatch(fetchLaneDataThunk());
-  }, []);
+  }, [lanedata]);
 
   return (
     <>
-      <motion.div layoutScroll className="h-full  ">
-        <div className="lanecontainer box-border font-mono flex-nowrap justify-between gap-6 flex flex-column ">
-          {lanedata ? (
-            lanedata.map((l) => (
-              <LaneElement
-                setShow={props.show}
-                key={l.id}
-                lane={l}
-              ></LaneElement>
-            ))
+      <motion.div layoutScroll className="h-full">
+        <div className="lanecontainer box-border font-mono flex-nowrap justify-between flex flex-column">
+          {lanedata !== null ? (
+            Object.values(lanedata).map((l) =>
+              l.active ? (
+                <LaneElement setShow={props.show} key={l.id} lane={l} />
+              ) : null
+            )
           ) : (
             <p>Data is loading or not available.</p>
           )}

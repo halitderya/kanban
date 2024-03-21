@@ -2,7 +2,7 @@
 export interface Card {
     id?: string;
     name: string;
-    created:Date;
+    created:string;
     archived: boolean;
     description?: string;
     lane:number;
@@ -15,6 +15,6 @@ export interface CommentType{
 
 
     comment:string;
-    date:Date;
+    date?:string;
 }
 

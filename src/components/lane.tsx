@@ -1,4 +1,4 @@
-import React, { Ref, useEffect, useRef, useState } from "react";
+import React, { useEffect } from "react";
 import { motion, useAnimationControls } from "framer-motion";
 import CardComponent from "./card";
 import { Lane } from "@/types/linetype";
@@ -8,52 +8,118 @@ import {
   fetchCardDataThunk,
   updateCardDataThunk,
 } from "@/features/card/cardSlice";
-
 import { Card } from "@/types/cardtype";
-import CardModal from "./cardmodal";
+////IMPORTS/////
 
 const LaneElement = (props: { lane: Lane; setShow: any }) => {
   const controls = useAnimationControls();
-
   const dispatch = useDispatch<AppDispatch>();
+
   const cardsData: { [key: string]: Card } | null = useSelector(
     (state: RootState) => state.carddata.data
   );
+  const lanedata: Lane[] = useSelector(
+    (state: RootState) => state.lanedata.data
+  );
+
+  //////Reading Directly HTML///
+  const laneCollection = document.getElementsByClassName("laneitem");
+  const laneCollectionLenght = laneCollection.length;
+  const lastLaneID = laneCollection.item(laneCollectionLenght - 1);
+
+  //////VARIABLES////////////
 
   useEffect(() => {
     dispatch(fetchCardDataThunk());
   }, []);
 
-  const dropped = (e: PointerEvent, c: Card) => {
+  ///////handleLaneDrop//////
+  function handleLaneDrop(e: PointerEvent, l: Lane) {
+    const droppedplaceholder = window.document
+      .elementsFromPoint(e.clientX, e.clientY)
+      .filter((element) => element.classList.contains("laneplaceholder"))[0];
+
+    const droppedplaceholderid = droppedplaceholder?.id;
+    if (!droppedplaceholderid) {
+      /////Lane moved to nowhere
+      controls.start({ x: 0, y: 0 });
+    }
+    /////Lane Moved to somewhere
+
+    ///brainstorm
+
+    console.log("placehorder: ", droppedplaceholderid);
+
+    const oldlanedata = lanedata;
+
+    let newlanedata: Lane[];
+    // dispatch(updateLaneThunk(updated)).then((action) => {});
+
+    // oldlanedata.forEach((l) => {
+    //   const templane = {
+    //     ...l,
+    //   };
+
+    //   if (l.id > props.lane.id) {
+    //     l.id = props.lane.id + 1;
+    //     newlanedata.push(templane);
+
+    //   }
+    //   newlanedata.push(templane);
+    //   console.log(newlanedata);
+    // });
+
+    ///brainstorm
+
+    controls.start({ x: 0, y: 0 });
+  }
+  ///////handleLaneDrop//////
+
+  //////HandleCardDropped//////
+  const handleCardDropped = (e: PointerEvent, c: Card) => {
     const theElement = window.document
       .elementsFromPoint(e.clientX, e.clientY)
       .filter((element) => element.classList.contains("laneitem"))[0];
 
     const laneId = theElement?.id;
     if (!laneId) {
-      console.log("moved to nowhere");
+      ////////Card Moved to Nowhere
       controls.start({ x: 0, y: 0 });
     } else {
+      //////Card Moved to Somewhere
       let updated;
-      c.lane === Number(8)
-        ? (updated = { ...c, lane: Number(laneId), active: true })
-        : (updated = { ...c, lane: Number(laneId), active: false });
 
-      // const updated = { ...c, lane: Number(laneId)  };
-      console.log(updated);
+      updated = {
+        ...c,
+        lane: Number(laneId),
+        lane_was: c.lane,
+        archived: false,
+      };
 
       controls.start({ x: 0, y: 0 });
 
       dispatch(updateCardDataThunk(updated)).then((action) => {});
     }
   };
-  const clicked = (e: any, c: Card) => {};
+
+  //////HandleCardDropped//////
 
   return (
     <>
+      <div
+        id={props.lane.order.toString()}
+        className="laneplaceholder w-24 h-auto border-4 flex-grow border-red-400 border-dotted"
+      >
+        placeholder
+      </div>
       <motion.div
+        drag
+        dragMomentum={false}
+        onDragEnd={(e) => {
+          handleLaneDrop(e as PointerEvent, props.lane);
+        }}
         id={props.lane.id + ""}
-        className="laneitem font-sans justify-between flex-col flex max-w-64  min-w-56 border-solid border-4 rounded-md border-gray-300 shadow-lg"
+        className="laneitem font-sans justify-between flex-col flex max-w-64  min-w-48 border-solid border-4 rounded-md border-gray-300 shadow-lg"
       >
         <div className=" flex flex-col justify-between w-full items-center laneheader mb-2 font-mono p-2 ">
           <label className=" mb-4 text-center">{props.lane.name}</label>
@@ -73,7 +139,7 @@ const LaneElement = (props: { lane: Lane; setShow: any }) => {
         <div className=" cardcontainer flex  flex-col w-full  p-2 justify-start">
           {cardsData &&
             Object.values(cardsData).map((c) => {
-              if (c.lane === props.lane.id) {
+              if (c.lane === props.lane.id && !c.archived) {
                 return (
                   <motion.div
                     className="motiondiv border-none"
@@ -83,16 +149,12 @@ const LaneElement = (props: { lane: Lane; setShow: any }) => {
                     whileHover={{ scale: 1.1 }}
                     animate={controls}
                     onDragEnd={(e) => {
-                      dropped(e as PointerEvent, c);
-                    }}
-                    onClick={(e) => {
-                      clicked(e as any, c);
+                      handleCardDropped(e as PointerEvent, c);
                     }}
                     dragMomentum={false}
                     key={c.id}
                     drag
                   >
-                    {" "}
                     <CardComponent
                       showModal={props.setShow}
                       key={c.id}
@@ -105,6 +167,14 @@ const LaneElement = (props: { lane: Lane; setShow: any }) => {
             })}
         </div>
       </motion.div>
+      {props.lane.id === Number(lastLaneID) && (
+        <div
+          id={props.lane.order.toString()}
+          className="laneplaceholder w-24 h-auto border-4 flex-grow border-red-400 border-dotted"
+        >
+          placeholder
+        </div>
+      )}
     </>
   );
 };

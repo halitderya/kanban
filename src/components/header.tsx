@@ -8,6 +8,10 @@ import {
 } from "@/features/card/cardSlice";
 import { useDispatch } from "react-redux";
 import {} from "@/theme/themechanger";
+import {
+  fetchLaneDataThunk,
+  populateDefaultLanesThunk,
+} from "@/features/lane/laneSlice";
 
 const Header = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -17,6 +21,14 @@ const Header = () => {
   ): void {
     dispatch(populateAllCardsThunk()).then(() => {
       dispatch(fetchCardDataThunk());
+    });
+  }
+
+  function addDefaultLanes(
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ): void {
+    dispatch(populateDefaultLanesThunk()).then(() => {
+      dispatch(fetchLaneDataThunk());
     });
   }
 
@@ -30,6 +42,9 @@ const Header = () => {
           className="w-full focus:outline-none  "
           placeholder="Search Here"
         ></input>
+      </div>
+      <div onClick={addDefaultLanes} className="topbarmenuicons">
+        Add Default Lanes
       </div>
       <div onClick={addDummyCards} className="topbarmenuicons">
         Add 5 Dummy Cards

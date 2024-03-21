@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {Lane} from "../../types/linetype"
-import { onValue, ref ,get, child} from "firebase/database";
+import { onValue, ref ,get, child, getDatabase, push, update,remove} from "firebase/database";
 import { db } from "../../utils/firebase";
 
 
@@ -22,6 +22,53 @@ const fetchData = async (endpoint = '') => {
     return null; 
   }
 };
+interface Updates {
+  [key: string]: Lane;
+}
+export const populateDefaultLanesThunk = createAsyncThunk(
+  'data/populateDefaultLanes',
+
+  async (_, thunkAPI) => {
+  
+
+    const data: Lane[] = await fetch("/lane.json").then((response) => response.json());
+    
+    const db = getDatabase();
+    const updates: Updates = {};
+//all data to be deleted before lanes populated
+ 
+await remove(ref(db,'kanbanBoard/lanes')).then(()=>{
+
+  data.forEach((lane: Lane) => {
+    // Generate a new key for each card
+    const newLaneKey = push(child(ref(db), 'kanbanBoard/lanes')).key;
+
+    if (newLaneKey === null) {
+      console.error('Failed to generate a new key for a card');
+      return; // Skip this iteration
+    }
+
+    lane.dbid = newLaneKey;
+    updates['/kanbanBoard/lanes/' + newLaneKey] = lane;
+  });
+
+
+})
+
+
+
+    return await update(ref(db), updates)
+      .then(() => {
+        console.log('Synchronization succeeded');
+
+      })
+
+      .catch((error) => {
+        console.error('Synchronization failed', error);
+      });
+  },
+);
+
 
 
 // Thunk to fetch all data
