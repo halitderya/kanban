@@ -65,17 +65,8 @@
 
           "active": true,
           "default": true
-        },
-        {
-          "id": 8,
-          "name": "Archived",
-          "description": "Tasks that are no longer active and have been archived."
-          ,
-          "order":7,
-
-          "active": true,
-          "default": true
         }
+
       ]
     
     

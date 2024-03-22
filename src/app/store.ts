@@ -13,7 +13,7 @@ export const store = configureStore({
  
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(sortMiddleware), // Add your sortMiddleware here
+    getDefaultMiddleware().concat(sortMiddleware), 
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

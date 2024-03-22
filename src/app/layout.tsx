@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 import "./globals.css";
 import { Inter, Roboto_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import React from "react";
 
 const inter = Inter({
   subsets: ["latin"],

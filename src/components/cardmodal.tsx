@@ -48,7 +48,6 @@ const CardModal = (props: { setShowModal: any; showModal: any }) => {
           : new Array<CommentType>(),
       archived: cardAsState?.archived,
       lane: cardAsState?.lane,
-      lane_was: cardAsState?.lane_was,
       name: cardAsState?.name,
     };
 

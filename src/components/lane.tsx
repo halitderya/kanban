@@ -9,29 +9,35 @@ import {
   updateCardDataThunk,
 } from "@/features/card/cardSlice";
 import { Card } from "@/types/cardtype";
+
+import { updateLaneDataThunk } from "@/features/lane/laneSlice";
 ////IMPORTS/////
 
 const LaneElement = (props: { lane: Lane; setShow: any }) => {
+  console.log("laneelement worked");
+
   const controls = useAnimationControls();
   const dispatch = useDispatch<AppDispatch>();
 
   const cardsData: { [key: string]: Card } | null = useSelector(
     (state: RootState) => state.carddata.data
   );
-  const lanedata: Lane[] = useSelector(
+  const lanedata: { [key: string]: Lane } | null = useSelector(
     (state: RootState) => state.lanedata.data
   );
 
   //////Reading Directly HTML///
   const laneCollection = document.getElementsByClassName("laneitem");
   const laneCollectionLenght = laneCollection.length;
-  const lastLaneID = laneCollection.item(laneCollectionLenght - 1);
+  const lastLaneID = laneCollection.item(laneCollectionLenght - 1)?.id;
+
+  //console.log("LastLaneID: ", lastLaneID);
 
   //////VARIABLES////////////
 
   useEffect(() => {
     dispatch(fetchCardDataThunk());
-  }, []);
+  }, [lanedata]);
 
   ///////handleLaneDrop//////
   function handleLaneDrop(e: PointerEvent, l: Lane) {
@@ -47,31 +53,49 @@ const LaneElement = (props: { lane: Lane; setShow: any }) => {
     /////Lane Moved to somewhere
 
     ///brainstorm
+    else {
+      console.log("placehorder: ", droppedplaceholderid);
 
-    console.log("placehorder: ", droppedplaceholderid);
+      let updated;
 
-    const oldlanedata = lanedata;
+      updated = {
+        ...l,
 
-    let newlanedata: Lane[];
-    // dispatch(updateLaneThunk(updated)).then((action) => {});
+        order: Number(droppedplaceholder.id),
+      };
 
-    // oldlanedata.forEach((l) => {
-    //   const templane = {
-    //     ...l,
-    //   };
+      console.log(
+        "old order:",
+        l.order,
+        "new order: ",
+        updated.order.toString()
+      );
 
-    //   if (l.id > props.lane.id) {
-    //     l.id = props.lane.id + 1;
-    //     newlanedata.push(templane);
+      dispatch(updateLaneDataThunk(updated)).then((action) => {
+        console.log(action);
+      });
+      controls.start({ x: 0, y: 0 });
 
-    //   }
-    //   newlanedata.push(templane);
-    //   console.log(newlanedata);
-    // });
+      /////NERDE KALDIK? DRAG DOGRU YERE SURUKLENDIGINDE YENIDEN RENDER OLMASI LAZIM. GERI KALAN LANE'LERIN ORDER'LARI DEGISMESI LAZIM
 
-    ///brainstorm
+      // dispatch(updateLaneThunk(updated)).then((action) => {});
 
-    controls.start({ x: 0, y: 0 });
+      // oldlanedata.forEach((l) => {
+      //   const templane = {
+      //     ...l,
+      //   };
+
+      //   if (l.id > props.lane.id) {
+      //     l.id = props.lane.id + 1;
+      //     newlanedata.push(templane);
+
+      //   }
+      //   newlanedata.push(templane);
+      //   console.log(newlanedata);
+      // });
+
+      ///brainstorm
+    }
   }
   ///////handleLaneDrop//////
 
@@ -92,11 +116,10 @@ const LaneElement = (props: { lane: Lane; setShow: any }) => {
       updated = {
         ...c,
         lane: Number(laneId),
-        lane_was: c.lane,
         archived: false,
       };
 
-      controls.start({ x: 0, y: 0 });
+      //     controls.start({ x: 0, y: 0 });
 
       dispatch(updateCardDataThunk(updated)).then((action) => {});
     }
@@ -114,6 +137,7 @@ const LaneElement = (props: { lane: Lane; setShow: any }) => {
       </div>
       <motion.div
         drag
+        animate={controls}
         dragMomentum={false}
         onDragEnd={(e) => {
           handleLaneDrop(e as PointerEvent, props.lane);
@@ -125,6 +149,7 @@ const LaneElement = (props: { lane: Lane; setShow: any }) => {
           <label className=" mb-4 text-center">{props.lane.name}</label>
 
           <motion.img
+            drag={false}
             onTap={() => {
               props.setShow(true);
             }}

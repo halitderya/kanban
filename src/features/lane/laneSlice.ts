@@ -81,6 +81,33 @@ export const fetchLaneDataThunk = createAsyncThunk(
   
 );
 
+export const updateLane = async (endpoint = "", updatedLane: Lane) => {
+  const dbRef = ref(db, endpoint + updatedLane.dbid);
+
+  try {
+    await update(dbRef, { ...updatedLane });
+    return updatedLane; 
+  } catch (error) {
+    console.error('error update', error);
+    return null; 
+  }
+};
+
+
+export const updateLaneDataThunk=createAsyncThunk(
+
+  'data/updateLaneData',
+  async(updatedLane:Lane ,thunkAPI)=>{
+  
+    
+   const data=  await updateLane("kanbanBoard/lanes/",updatedLane);
+    return (data as Lane);
+  }
+  ); 
+  
+  
+
+
 // Thunk to fetch data by ID
 export const fetchLaneIDThunk = createAsyncThunk<
 Lane,

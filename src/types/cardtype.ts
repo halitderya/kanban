@@ -6,7 +6,6 @@ export interface Card {
     archived: boolean;
     description?: string;
     lane:number;
-    lane_was:number;
     owner:string;
     comments?:CommentType[];
     
