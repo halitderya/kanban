@@ -13,7 +13,10 @@ import {
   populateDefaultLanesThunk,
 } from "@/features/lane/laneSlice";
 
-const Header = () => {
+const Header = (props: {
+  setshowLaneSettingsModal: any;
+  showLaneSettingsModal: any;
+}) => {
   const dispatch = useDispatch<AppDispatch>();
 
   function addDummyCards(
@@ -50,7 +53,14 @@ const Header = () => {
         Add 5 Dummy Cards
       </div>
       <ThemeSwitch />
-      <div className="topbarmenuicons">Link2</div>
+      <div
+        onClick={() => {
+          props.setshowLaneSettingsModal(true);
+        }}
+        className="topbarmenuicons"
+      >
+        Settings
+      </div>
       <div className="topbarmenuicons">Profile</div>
     </div>
   );

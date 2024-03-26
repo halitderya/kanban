@@ -1,6 +1,6 @@
 "use client";
 import { fetchLaneDataThunk } from "@/features/lane/laneSlice";
-import React, { use, useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../app/store";
 import { Lane } from "@/types/linetype";
@@ -26,9 +26,14 @@ const Lanecontainer = (props: { show: any }) => {
         "
         >
           {lanedata !== null ? (
-            Object.values(lanedata).map((l) =>
+            Object.values(lanedata).map((l, index) =>
               l.active ? (
-                <LaneElement setShow={props.show} key={l.id} lane={l} />
+                <LaneElement
+                  order={index + 1}
+                  setShow={props.show}
+                  key={l.id}
+                  lane={l}
+                />
               ) : null
             )
           ) : (

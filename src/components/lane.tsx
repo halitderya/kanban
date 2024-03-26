@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion, useAnimationControls } from "framer-motion";
 import CardComponent from "./card";
 import { Lane } from "@/types/linetype";
@@ -10,12 +10,13 @@ import {
 } from "@/features/card/cardSlice";
 import { Card } from "@/types/cardtype";
 
-import { updateLaneDataThunk } from "@/features/lane/laneSlice";
+import {
+  fetchLaneDataThunk,
+  updateLaneDataThunk,
+} from "@/features/lane/laneSlice";
 ////IMPORTS/////
 
-const LaneElement = (props: { lane: Lane; setShow: any }) => {
-  console.log("laneelement worked");
-
+const LaneElement = (props: { lane: Lane; setShow: any; order: number }) => {
   const controls = useAnimationControls();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -40,65 +41,67 @@ const LaneElement = (props: { lane: Lane; setShow: any }) => {
   }, [lanedata]);
 
   ///////handleLaneDrop//////
-  function handleLaneDrop(e: PointerEvent, l: Lane) {
-    const droppedplaceholder = window.document
-      .elementsFromPoint(e.clientX, e.clientY)
-      .filter((element) => element.classList.contains("laneplaceholder"))[0];
+  // function handleLaneDrop(e: PointerEvent, l: Lane) {
+  //   const droppedplaceholder = window.document
+  //     .elementsFromPoint(e.clientX, e.clientY)
+  //     .filter((element) => element.classList.contains("laneplaceholder"))[0];
 
-    const droppedplaceholderid = droppedplaceholder?.id;
-    if (!droppedplaceholderid) {
-      /////Lane moved to nowhere
-      controls.start({ x: 0, y: 0 });
-    }
-    /////Lane Moved to somewhere
+  //   const droppedplaceholderid = droppedplaceholder?.id;
+  //   if (!droppedplaceholderid) {
+  //     /////Lane moved to nowhere
+  //     controls.start({ x: 0, y: 0 });
+  //   }
+  //   /////Lane Moved on a placeholder
+  //   else {
+  //     let updated: Lane;
 
-    ///brainstorm
-    else {
-      console.log("placehorder: ", droppedplaceholderid);
+  //     updated = {
+  //       ...l,
 
-      let updated;
+  //       order: Number(droppedplaceholder.id),
+  //     };
+  //     dispatch(updateLaneDataThunk(updated)).then(() => {
+  //       dispatch(fetchLaneDataThunk()).then(() => {
+  //         if (lanedata) {
+  //           const laneDataArray = Array.from(Object.values(lanedata));
+  //           const laneItemArray = Array.from(
+  //             document.getElementsByClassName("laneitem")
+  //           );
 
-      updated = {
-        ...l,
+  //           laneDataArray.forEach((ld) => {
+  //             var targetElement = laneItemArray.find(
+  //               (element) => element.id === ld.id.toString()
+  //             );
 
-        order: Number(droppedplaceholder.id),
-      };
+  //             var prevSibling = targetElement
+  //               ? targetElement.previousElementSibling
+  //               : null;
 
-      console.log(
-        "old order:",
-        l.order,
-        "new order: ",
-        updated.order.toString()
-      );
+  //             console.log("ld: ", ld.name, "prevSib: ", prevSibling?.id);
 
-      dispatch(updateLaneDataThunk(updated)).then((action) => {
-        console.log(action);
-      });
-      controls.start({ x: 0, y: 0 });
+  //             if (prevSibling) {
+  //               let updated;
+  //               updated = {
+  //                 ...l,
+  //                 order: Number(prevSibling.id),
+  //               };
 
-      /////NERDE KALDIK? DRAG DOGRU YERE SURUKLENDIGINDE YENIDEN RENDER OLMASI LAZIM. GERI KALAN LANE'LERIN ORDER'LARI DEGISMESI LAZIM
+  //               dispatch(updateLaneDataThunk(updated));
+  //             }
+  //           });
+  //         }
+  //       });
+  //     });
 
-      // dispatch(updateLaneThunk(updated)).then((action) => {});
+  //     controls.start({ x: 0, y: 0 });
 
-      // oldlanedata.forEach((l) => {
-      //   const templane = {
-      //     ...l,
-      //   };
+  //     /////NERDE KALDIK?  GERI KALAN LANE'LERIN ORDER'LARI DEGISMESI LAZIM
+  //   }
+  // }
+  ///////handleLaneDropENDED//////
+  ///ordering test
 
-      //   if (l.id > props.lane.id) {
-      //     l.id = props.lane.id + 1;
-      //     newlanedata.push(templane);
-
-      //   }
-      //   newlanedata.push(templane);
-      //   console.log(newlanedata);
-      // });
-
-      ///brainstorm
-    }
-  }
-  ///////handleLaneDrop//////
-
+  ////ordering test ENDED////
   //////HandleCardDropped//////
   const handleCardDropped = (e: PointerEvent, c: Card) => {
     const theElement = window.document
@@ -116,7 +119,6 @@ const LaneElement = (props: { lane: Lane; setShow: any }) => {
       updated = {
         ...c,
         lane: Number(laneId),
-        archived: false,
       };
 
       //     controls.start({ x: 0, y: 0 });
@@ -130,18 +132,16 @@ const LaneElement = (props: { lane: Lane; setShow: any }) => {
   return (
     <>
       <div
-        id={props.lane.order.toString()}
-        className="laneplaceholder w-24 h-auto border-4 flex-grow border-red-400 border-dotted"
-      >
-        placeholder
-      </div>
+        id={props.order.toString()}
+        className="laneplaceholder w-24 h-auto  flex-grow border-red-400 border-dotted"
+      ></div>
       <motion.div
-        drag
+        // drag
         animate={controls}
         dragMomentum={false}
-        onDragEnd={(e) => {
-          handleLaneDrop(e as PointerEvent, props.lane);
-        }}
+        // onDragEnd={(e) => {
+        //   handleLaneDrop(e as PointerEvent, props.lane);
+        // }}
         id={props.lane.id + ""}
         className="laneitem font-sans justify-between flex-col flex max-w-64  min-w-48 border-solid border-4 rounded-md border-gray-300 shadow-lg"
       >
@@ -194,11 +194,9 @@ const LaneElement = (props: { lane: Lane; setShow: any }) => {
       </motion.div>
       {props.lane.id === Number(lastLaneID) && (
         <div
-          id={props.lane.order.toString()}
-          className="laneplaceholder w-24 h-auto border-4 flex-grow border-red-400 border-dotted"
-        >
-          placeholder
-        </div>
+          id={(props.order + 1).toString()}
+          className="laneplaceholder w-24 h-auto  flex-grow border-red-400 border-dotted"
+        ></div>
       )}
     </>
   );

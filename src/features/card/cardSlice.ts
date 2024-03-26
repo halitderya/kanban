@@ -57,7 +57,8 @@ async(updatedCard:Card ,thunkAPI)=>{
 interface Updates {
   [key: string]: Card;
 }
-
+//here we read data from json to upload as card, since we don't know what ID firebase will assign, we fetch assigned ID to assign the value of 
+// newCardKey then updating the card with this ID. We don't update redux store here. fetching also required.
 export const populateAllCardsThunk = createAsyncThunk(
   'data/populateAllCards',
   async (_, thunkAPI) => {
@@ -138,6 +139,7 @@ export const cardSlice = createSlice({
         // Set the state with the fetched data
         
         state.data = action.payload;
+        
       })
      .addCase(fetchCardDataThunk.rejected, (state,action)=>{
 
@@ -145,6 +147,7 @@ export const cardSlice = createSlice({
     .addCase(fetchCardIDThunk.fulfilled, (state, action) => {
         state.dataWithID = action.payload;}) 
     .addCase(updateCardDataThunk.fulfilled, (state, action) => {
+
 
 
         const updatedCard = action.payload;

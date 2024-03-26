@@ -147,6 +147,12 @@ export const laneSlice = createSlice({
         // Set the state with the fetched data
         state.data = action.payload;
       })
+      .addCase(updateLaneDataThunk.rejected,(state,action)=>{
+        console.error(action.error)
+
+
+
+      })
      .addCase(fetchLaneIDThunk.rejected, (state,action)=>{
       console.error(action.error)
 

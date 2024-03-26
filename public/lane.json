@@ -3,7 +3,7 @@
           "id": 1,
           "name": "To Do",
           "description": "Tasks that need to be done.",
-          "order":0,
+          "order":1,
           "active": true,
           "default": true
         },
@@ -11,7 +11,7 @@
           "id": 2,
           "name": "In Progress",
           "description": "Tasks that are currently being worked on.",
-          "order":1,
+          "order":2,
 
           "active": true,
           "default": true
@@ -22,7 +22,7 @@
           "description": "Tasks that are in the review phase."
           
           ,
-          "order":2,
+          "order":3,
 
           "active": true,
           "default": true
@@ -41,7 +41,7 @@
           "id": 5,
           "name": "Deploy",
           "description": "Tasks that are ready for deployment.",
-          "order":3,
+          "order":5,
 
           "active": true,
           "default": true
@@ -51,7 +51,7 @@
           "name": "On Hold",
           "description": "Tasks that are on hold or waiting for further action."
           ,
-          "order":5,
+          "order":6,
 
           "active": true,
           "default": true
@@ -61,7 +61,7 @@
           "name": "Completed",
           "description": "Tasks that have been successfully completed."
           ,
-          "order":6,
+          "order":7,
 
           "active": true,
           "default": true
