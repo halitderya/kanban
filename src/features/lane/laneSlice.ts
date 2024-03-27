@@ -14,7 +14,7 @@ const fetchData = async (endpoint = '') => {
       let data = snapshot.val();
       return data; 
     } else {
-      console.log("Data not available");
+      console.error("Data not available");
       return null; 
     }
   } catch (error) {
@@ -25,6 +25,33 @@ const fetchData = async (endpoint = '') => {
 interface Updates {
   [key: string]: Lane;
 }
+export const addNewLaneThunk=createAsyncThunk(
+'data/addNewLane',
+async(lane:Lane,thunkAPI)=>{
+
+
+
+  const newLaneKey = push(child(ref(db), 'kanbanBoard/lanes')).key;
+if (newLaneKey !== null) {
+  const updates: Updates = {};
+
+  lane.dbid = newLaneKey;
+  updates['/kanbanBoard/lanes/' + newLaneKey] = lane;
+  return await update(ref(db), updates)
+  .then(() => {
+
+  })
+}
+else{
+
+  console.error("failed to generate a key for a new line")
+}
+
+
+}
+
+
+)
 export const populateDefaultLanesThunk = createAsyncThunk(
   'data/populateDefaultLanes',
 
@@ -54,9 +81,6 @@ await remove(ref(db,'kanbanBoard/lanes')).then(()=>{
 
 
 })
-
-
-
     return await update(ref(db), updates)
       .then(() => {
         console.log('Synchronization succeeded');

@@ -10,10 +10,6 @@ import {
 } from "@/features/card/cardSlice";
 import { Card } from "@/types/cardtype";
 
-import {
-  fetchLaneDataThunk,
-  updateLaneDataThunk,
-} from "@/features/lane/laneSlice";
 ////IMPORTS/////
 
 const LaneElement = (props: { lane: Lane; setShow: any; order: number }) => {
@@ -30,7 +26,6 @@ const LaneElement = (props: { lane: Lane; setShow: any; order: number }) => {
   //////Reading Directly HTML///
   const laneCollection = document.getElementsByClassName("laneitem");
   const laneCollectionLenght = laneCollection.length;
-  const lastLaneID = laneCollection.item(laneCollectionLenght - 1)?.id;
 
   //console.log("LastLaneID: ", lastLaneID);
 
@@ -40,69 +35,6 @@ const LaneElement = (props: { lane: Lane; setShow: any; order: number }) => {
     dispatch(fetchCardDataThunk());
   }, [lanedata]);
 
-  ///////handleLaneDrop//////
-  // function handleLaneDrop(e: PointerEvent, l: Lane) {
-  //   const droppedplaceholder = window.document
-  //     .elementsFromPoint(e.clientX, e.clientY)
-  //     .filter((element) => element.classList.contains("laneplaceholder"))[0];
-
-  //   const droppedplaceholderid = droppedplaceholder?.id;
-  //   if (!droppedplaceholderid) {
-  //     /////Lane moved to nowhere
-  //     controls.start({ x: 0, y: 0 });
-  //   }
-  //   /////Lane Moved on a placeholder
-  //   else {
-  //     let updated: Lane;
-
-  //     updated = {
-  //       ...l,
-
-  //       order: Number(droppedplaceholder.id),
-  //     };
-  //     dispatch(updateLaneDataThunk(updated)).then(() => {
-  //       dispatch(fetchLaneDataThunk()).then(() => {
-  //         if (lanedata) {
-  //           const laneDataArray = Array.from(Object.values(lanedata));
-  //           const laneItemArray = Array.from(
-  //             document.getElementsByClassName("laneitem")
-  //           );
-
-  //           laneDataArray.forEach((ld) => {
-  //             var targetElement = laneItemArray.find(
-  //               (element) => element.id === ld.id.toString()
-  //             );
-
-  //             var prevSibling = targetElement
-  //               ? targetElement.previousElementSibling
-  //               : null;
-
-  //             console.log("ld: ", ld.name, "prevSib: ", prevSibling?.id);
-
-  //             if (prevSibling) {
-  //               let updated;
-  //               updated = {
-  //                 ...l,
-  //                 order: Number(prevSibling.id),
-  //               };
-
-  //               dispatch(updateLaneDataThunk(updated));
-  //             }
-  //           });
-  //         }
-  //       });
-  //     });
-
-  //     controls.start({ x: 0, y: 0 });
-
-  //     /////NERDE KALDIK?  GERI KALAN LANE'LERIN ORDER'LARI DEGISMESI LAZIM
-  //   }
-  // }
-  ///////handleLaneDropENDED//////
-  ///ordering test
-
-  ////ordering test ENDED////
-  //////HandleCardDropped//////
   const handleCardDropped = (e: PointerEvent, c: Card) => {
     const theElement = window.document
       .elementsFromPoint(e.clientX, e.clientY)
@@ -121,8 +53,6 @@ const LaneElement = (props: { lane: Lane; setShow: any; order: number }) => {
         lane: Number(laneId),
       };
 
-      //     controls.start({ x: 0, y: 0 });
-
       dispatch(updateCardDataThunk(updated)).then((action) => {});
     }
   };
@@ -131,10 +61,6 @@ const LaneElement = (props: { lane: Lane; setShow: any; order: number }) => {
 
   return (
     <>
-      <div
-        id={props.order.toString()}
-        className="laneplaceholder w-24 h-auto  flex-grow border-red-400 border-dotted"
-      ></div>
       <motion.div
         // drag
         animate={controls}
@@ -192,12 +118,6 @@ const LaneElement = (props: { lane: Lane; setShow: any; order: number }) => {
             })}
         </div>
       </motion.div>
-      {props.lane.id === Number(lastLaneID) && (
-        <div
-          id={(props.order + 1).toString()}
-          className="laneplaceholder w-24 h-auto  flex-grow border-red-400 border-dotted"
-        ></div>
-      )}
     </>
   );
 };
