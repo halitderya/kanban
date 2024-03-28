@@ -51,7 +51,35 @@ else{
 }
 
 
+
 )
+
+
+
+export const deleteSingleLaneThunk=createAsyncThunk(
+
+  'data/deleteSingleLane',
+  async(laneDBID:string,thunkAPI)=>{
+
+    await remove(ref(db,'kanbanBoard/lanes/'+laneDBID)).then((e)=>{
+
+      
+      
+      
+    }).catch((e)=>{
+
+      console.error(e)
+      
+    });
+
+
+
+  }
+
+)
+
+
+
 export const populateDefaultLanesThunk = createAsyncThunk(
   'data/populateDefaultLanes',
 

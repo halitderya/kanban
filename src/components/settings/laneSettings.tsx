@@ -10,6 +10,7 @@ import { current } from "@reduxjs/toolkit";
 import { Lane } from "@/types/linetype";
 import {
   addNewLaneThunk,
+  deleteSingleLaneThunk,
   fetchLaneDataThunk,
   updateLaneDataThunk,
 } from "@/features/lane/laneSlice";
@@ -41,14 +42,19 @@ const LaneSettingsModal = (props: {
   );
   const laneArray = lanedata ? Object.values(lanedata) : [];
 
+  const carddata: { [key: string]: Card } | null = useSelector(
+    (state: RootState) => state.carddata.data
+  );
+
   const [items, setItems] = useState(laneArray);
   const [showAddLaneModal, setShowAddLaneModal] = useState<boolean>(false);
   const [newLaneName, setNewLaneName] = useState<string>("");
   const [newLaneDesc, setNewLaneDesc] = useState<string>("");
   const [submitEnabled, setSubmitEnabled] = useState<boolean>(false);
-  const [showDeleteConfirmation, setShowDeleteConfirmation] =
+  const [showDeletionConfirmation, setShowDeletionConfirmation] =
     useState<boolean>(false);
-  const [canBeDeleted, setCanBeDeleted] = useState<boolean>(false);
+  const [canDelete, setCanDelete] = useState<boolean>(false);
+  const [dbID, setDbID] = useState<string>("");
 
   function handleoutsideclick(e: React.SyntheticEvent) {
     props.setshowLaneSettingsModal(false);
@@ -56,6 +62,27 @@ const LaneSettingsModal = (props: {
     dispatch(fetchLaneDataThunk());
   }
 
+  function DeleteConfirmed(e: React.SyntheticEvent) {
+    e.preventDefault();
+    dispatch(deleteSingleLaneThunk(dbID));
+  }
+
+  function HandleDeletability(id: number) {
+    const cardArray = carddata ? Object.values(carddata) : [];
+
+    const hasCards = cardArray.find((c) => c.lane === id);
+
+    if (hasCards !== undefined) {
+      setCanDelete(false);
+    } else {
+      const tobedeleted = laneArray.find((l) => l.id === id)?.dbid;
+
+      if (tobedeleted !== undefined) {
+        setCanDelete(true);
+        setDbID(tobedeleted);
+      }
+    }
+  }
   function LaneActiveChanged(lane: Lane) {
     const updatedlane: Lane = {
       ...lane,
@@ -117,13 +144,47 @@ const LaneSettingsModal = (props: {
       dispatch(updateLaneDataThunk(lane));
     });
   }
-
+  /////
   if (props.showLaneSettingsModal) {
     return (
       <div
-        className="bg-transparent backdrop-blur-sm w-full h-full fixed flex items-center justify-center "
+        className=" bg-transparent backdrop-blur-sm w-full h-full fixed flex items-center justify-center "
         onClick={(e) => handleoutsideclick(e)}
       >
+        {showDeletionConfirmation && (
+          <div className="addlanemodal shadow-xl fixed p-6 overflow-y-auto overflow-x-hidden flex-grow-0 shadow-gray-400  hover:bg-slate-200  bg-slate-200  font-sans justify-between flex-col flex w-96  h-min-48 border-solid border-4 rounded-lg border-gray-400 z-[1000]">
+            {canDelete ? (
+              <div className="flex flex-col w-full">
+                <h3>Are you sure you want to delete this lane?</h3>
+
+                <div className="w-full flex space-between center mt-4 justify-around gap-">
+                  <button
+                    onClick={(e) => {
+                      DeleteConfirmed(e);
+                    }}
+                    className=" formsubmit min-w-24 bg-slate-400"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowDeletionConfirmation(false);
+                      setCanDelete(false);
+                      setDbID("");
+                    }}
+                    className="formsubmit min-w-24 bg-slate-400"
+                  >
+                    No
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p>Lane has cards, hence cannot be deleted.</p>
+            )}
+            {}
+          </div>
+        )}
         {showAddLaneModal ? (
           <div
             onClick={(e) => {
@@ -182,7 +243,11 @@ const LaneSettingsModal = (props: {
         ) : null}
         <div
           className="modalwindow shadow-xl p-6 overflow-y-auto overflow-x-hidden flex-grow-0 shadow-gray-400 w-auto hover:bg-slate-200  bg-slate-200 h-auto font-sans justify-between flex-col flex max-w-[400px] min-w-[300px] min-h-52 max-h-[600px] border-solid border-4 rounded-lg border-gray-400 z-[700]"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowAddLaneModal(false);
+            setShowDeletionConfirmation(false);
+          }}
         >
           <div className="flex flex-row w-full justify-between mb-8 ">
             <div className="font-sans self-start font-extralight flex   ">
@@ -212,7 +277,7 @@ const LaneSettingsModal = (props: {
                   <div>
                     <div>
                       <motion.div
-                        key={item.id}
+                        key={item.dbid}
                         animate={item.active ? "unchecked" : "checked"}
                         className="relative w-16 h-8 flex items-center flex-shrink-0 ml-4 p-1 rounded-full  cursor-pointer z-50"
                         variants={backgroundVariants}
@@ -236,14 +301,17 @@ const LaneSettingsModal = (props: {
                       </motion.div>
                     </div>
                   </div>
+
                   <div className="ml-2">
                     {!item.default ? (
                       <motion.img
+                        id={item.dbid.toString()}
                         drag={false}
-                        onTap={() => {
-                          setShowAddLaneModal(true);
+                        onTap={(e) => {
+                          setShowDeletionConfirmation(true);
+                          HandleDeletability(item.id);
                         }}
-                        alt="Add New Card"
+                        alt="Delete Lane"
                         whileHover={{ scale: 1.5 }}
                         src="/svg/delete.svg"
                       ></motion.img>
