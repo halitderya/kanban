@@ -7,6 +7,7 @@ import { Reorder, motion, useDragControls } from "framer-motion";
 import {
   fetchCardDataThunk,
   populateAllCardsThunk,
+  removeAllCardsThunk,
   updateCard,
   updateCardDataThunk,
 } from "@/features/card/cardSlice";
@@ -62,6 +63,10 @@ const LaneSettingsModal = (props: {
   const [canDelete, setCanDelete] = useState<boolean>(false);
   const [dbID, setDbID] = useState<string>("");
 
+  // useEffect(() => {
+  //   dispatch(fetchLaneDataThunk());
+  // }, [items]);
+
   function handleoutsideclick(e: React.SyntheticEvent) {
     props.setshowLaneSettingsModal(false);
     setShowAddLaneModal(false);
@@ -105,6 +110,13 @@ const LaneSettingsModal = (props: {
       dispatch(fetchLaneDataThunk());
     });
   }
+  function deleteAllCards(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ): void {
+    dispatch(removeAllCardsThunk()).then(() => {
+      dispatch(fetchCardDataThunk());
+    });
+  }
 
   ///
 
@@ -114,10 +126,12 @@ const LaneSettingsModal = (props: {
       active: !lane.active,
     };
 
-    dispatch(updateLaneDataThunk(updatedlane));
     setItems((currentItems) =>
       currentItems.map((item) => (item.id === lane.id ? updatedlane : item))
     );
+    dispatch(updateLaneDataThunk(updatedlane)).then(() => {
+      dispatch(fetchLaneDataThunk());
+    });
   }
 
   function handleNewLaneAdded(e: React.SyntheticEvent) {
@@ -275,7 +289,7 @@ const LaneSettingsModal = (props: {
           }}
         >
           <div className="flex flex-row w-full justify-between mb-8 ">
-            <div className="font-sans self-start flex   ">Lane Settings</div>
+            <div className="font-sans self-start flex  ">Lane Settings</div>
             <motion.img
               drag={false}
               onTap={() => {
@@ -361,13 +375,19 @@ const LaneSettingsModal = (props: {
             className=" mb-2 dark:border-dark p-1 border-light shadow-lg bg-gray-100 hover:bg-gray-50  cursor-pointer"
             onClick={addDefaultLanes}
           >
-            Add Default Lanes
+            Reset to default lanes
+          </button>
+          <button
+            className=" dark:border-dark p-1 mb-2 border-light shadow-lg bg-gray-100 hover:bg-gray-50  cursor-pointer"
+            onClick={deleteAllCards}
+          >
+            Delete all cards
           </button>
           <button
             className=" dark:border-dark p-1 border-light shadow-lg bg-gray-100 hover:bg-gray-50  cursor-pointer"
             onClick={addDummyCards}
           >
-            Add 5 Dummy Cards
+            Add 5 dummy cards
           </button>
         </div>
       </div>

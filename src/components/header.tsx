@@ -9,7 +9,7 @@ const Header = (props: {
   showLaneSettingsModal: any;
 }) => {
   return (
-    <div className="  header flex cursor-pointer items-center mb-4 w-full shadow-xl gap-x-8 ">
+    <div className=" border-test header flex cursor-pointer items-center mb-4 w-full shadow-xl gap-x-8 ">
       <div className="icondiv  dark:border-gray-200 border-solid border-4 dark:bg-gray-400 flex flex-row  bg-gray-100 rounded-md flex-shrink-0 flex-grow mx-2 items-center ">
         {/* <img className=" fill-red-700" src="/svg/search.svg"></img>  */}
 
@@ -24,7 +24,7 @@ const Header = (props: {
         onClick={() => {
           props.setshowLaneSettingsModal(true);
         }}
-        className="topbarmenuicons"
+        className="topbarmenuicons "
       >
         Settings
       </div>

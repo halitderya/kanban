@@ -21,7 +21,7 @@ body {
 
 @layer components {
   .topbarmenuicons {
-    @apply flex justify-center content-center min-w-16 grow-0 h-full items-center hover:rounded-md hover:bg-gray-200 px-5;
+    @apply flex justify-center content-center min-w-16 grow-0 h-full items-center hover:rounded-md p-4 hover:bg-gray-200 px-6;
   }
   .laneitem {
     @apply flex justify-center content-center min-w-16 grow-0 h-full items-center hover:rounded-md hover:bg-gray-200;
