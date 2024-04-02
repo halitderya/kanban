@@ -43,9 +43,19 @@ const LaneElement = (props: { lane: Lane; setShow: any; order: number }) => {
     const laneId = theElement?.id;
     if (!laneId) {
       ////////Card Moved to Nowhere
+
+      console.log("card moved to nowhere");
+
       controls.start({ x: 0, y: 0 });
     } else {
       //////Card Moved to Somewhere
+      if (laneId === c.lane.toString()) {
+        console.log("dropped same line");
+        controls.start({ x: 0, y: 0 });
+
+        return;
+      }
+
       let updated;
 
       updated = {
