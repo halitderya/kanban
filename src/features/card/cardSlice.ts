@@ -1,6 +1,6 @@
  import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {Card} from "../../types/cardtype"
-import { child, get, getDatabase, push, ref,set, update } from 'firebase/database';
+import { child, get, getDatabase, push, ref,remove,set, update } from 'firebase/database';
 import { db } from "../../utils/firebase";
 
 
@@ -36,7 +36,19 @@ export const updateCard = async (endpoint = "", updatedCard: Card) => {
   }
 };
 
+export const removeAllCardsThunk= createAsyncThunk(
+'data/deleteAllCards',
+async(_,thunkAPI)=>{
 
+  await remove(ref(db,'kanbanBoard/cards')).then((response)=>{
+console.log("response: " ,response);
+
+    
+  })
+}
+
+
+);
 
 
 export const updateCardDataThunk=createAsyncThunk(
