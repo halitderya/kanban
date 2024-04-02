@@ -4,7 +4,12 @@ import { Card, CommentType } from "@/types/cardtype";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/app/store";
 import { Reorder, motion, useDragControls } from "framer-motion";
-import { updateCard, updateCardDataThunk } from "@/features/card/cardSlice";
+import {
+  fetchCardDataThunk,
+  populateAllCardsThunk,
+  updateCard,
+  updateCardDataThunk,
+} from "@/features/card/cardSlice";
 import { selectCard } from "@/features/card/selectedCardSlice";
 import { current } from "@reduxjs/toolkit";
 import { Lane } from "@/types/linetype";
@@ -12,6 +17,7 @@ import {
   addNewLaneThunk,
   deleteSingleLaneThunk,
   fetchLaneDataThunk,
+  populateDefaultLanesThunk,
   updateLaneDataThunk,
 } from "@/features/lane/laneSlice";
 
@@ -83,6 +89,25 @@ const LaneSettingsModal = (props: {
       }
     }
   }
+  ///immigrant functions
+  function addDummyCards(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ): void {
+    dispatch(populateAllCardsThunk()).then(() => {
+      dispatch(fetchCardDataThunk());
+    });
+  }
+
+  function addDefaultLanes(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ): void {
+    dispatch(populateDefaultLanesThunk()).then(() => {
+      dispatch(fetchLaneDataThunk());
+    });
+  }
+
+  ///
+
   function LaneActiveChanged(lane: Lane) {
     const updatedlane: Lane = {
       ...lane,
@@ -148,7 +173,7 @@ const LaneSettingsModal = (props: {
   if (props.showLaneSettingsModal) {
     return (
       <div
-        className=" bg-transparent backdrop-blur-sm w-full h-full fixed flex items-center justify-center "
+        className=" bg-transparent backdrop-blur-sm w-full h-full fixed flex items-center justify-center  "
         onClick={(e) => handleoutsideclick(e)}
       >
         {showDeletionConfirmation && (
@@ -242,7 +267,7 @@ const LaneSettingsModal = (props: {
           </div>
         ) : null}
         <div
-          className="modalwindow shadow-xl p-6 overflow-y-auto overflow-x-hidden flex-grow-0 shadow-gray-400 w-auto hover:bg-slate-200  bg-slate-200 h-auto font-sans justify-between flex-col flex max-w-[400px] min-w-[300px] min-h-52 max-h-[600px] border-solid border-4 rounded-lg border-gray-400 z-[700]"
+          className=" dark:border-2 dark:border-gray-200 dark:border-solid w-max-3/4 overflow-auto modalwindow shadow-xl p-6 flex-grow-0 shadow-gray-400 w-auto bg-gray-200 dark:bg-gray-400   h-auto font-sans justify-between flex-col flex max-w-[400px] min-w-[300px] min-h-52 max-h-[600px] border-solid border-4 rounded-lg border-gray-400 z-[700]"
           onClick={(e) => {
             e.stopPropagation();
             setShowAddLaneModal(false);
@@ -250,9 +275,7 @@ const LaneSettingsModal = (props: {
           }}
         >
           <div className="flex flex-row w-full justify-between mb-8 ">
-            <div className="font-sans self-start font-extralight flex   ">
-              Lane Settings
-            </div>
+            <div className="font-sans self-start flex   ">Lane Settings</div>
             <motion.img
               drag={false}
               onTap={() => {
@@ -263,7 +286,6 @@ const LaneSettingsModal = (props: {
               src="/svg/add_icon.svg"
             ></motion.img>{" "}
           </div>
-
           <Reorder.Group
             className="w-full"
             axis="y"
@@ -333,10 +355,25 @@ const LaneSettingsModal = (props: {
               </Reorder.Item>
             ))}
           </Reorder.Group>
+          <h2 className="cursor-none my-4">Default Settings</h2>
+
+          <button
+            className=" mb-2 dark:border-dark p-1 border-light shadow-lg bg-gray-100 hover:bg-gray-50  cursor-pointer"
+            onClick={addDefaultLanes}
+          >
+            Add Default Lanes
+          </button>
+          <button
+            className=" dark:border-dark p-1 border-light shadow-lg bg-gray-100 hover:bg-gray-50  cursor-pointer"
+            onClick={addDummyCards}
+          >
+            Add 5 Dummy Cards
+          </button>
         </div>
       </div>
     );
   }
+
   return null;
 };
 

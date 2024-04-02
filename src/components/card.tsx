@@ -24,7 +24,7 @@ const CardComponent = (props: { card: Card; showModal: any }) => {
     >
       <div className="font-mono">{props.card?.name}</div>
       <br></br>
-      <div>{props.card?.description}</div>
+      <div className="">{props.card?.description}</div>
       <div>{props.card?.owner}</div>
     </motion.div>
   );

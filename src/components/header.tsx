@@ -1,58 +1,25 @@
-import { CiSearch } from "react-icons/ci";
 import React from "react";
-import { AppDispatch } from "../app/store";
 import ThemeSwitch from "@/theme/themechanger";
-import {
-  fetchCardDataThunk,
-  populateAllCardsThunk,
-} from "@/features/card/cardSlice";
-import { useDispatch } from "react-redux";
+
 import {} from "@/theme/themechanger";
-import {
-  fetchLaneDataThunk,
-  populateDefaultLanesThunk,
-} from "@/features/lane/laneSlice";
+import SearchIcon from "./iconcomponents/searchicon";
 
 const Header = (props: {
   setshowLaneSettingsModal: any;
   showLaneSettingsModal: any;
 }) => {
-  const dispatch = useDispatch<AppDispatch>();
-
-  function addDummyCards(
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>
-  ): void {
-    dispatch(populateAllCardsThunk()).then(() => {
-      dispatch(fetchCardDataThunk());
-    });
-  }
-
-  function addDefaultLanes(
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>
-  ): void {
-    dispatch(populateDefaultLanesThunk()).then(() => {
-      dispatch(fetchLaneDataThunk());
-    });
-  }
-
   return (
-    <div className=" header grow-1 flex cursor-pointer items-center mb-4  shadow-xl gap-x-8 ">
-      <div className="topbarmenuicons">One</div>
-      <div className="flex grow   ">
-        <CiSearch size={25} />
+    <div className="  header flex cursor-pointer items-center mb-4 w-full shadow-xl gap-x-8 ">
+      <div className="icondiv  dark:border-gray-200 border-solid border-4 dark:bg-gray-400 flex flex-row  bg-gray-100 rounded-md flex-shrink-0 flex-grow mx-2 items-center ">
+        {/* <img className=" fill-red-700" src="/svg/search.svg"></img>  */}
 
+        <SearchIcon></SearchIcon>
         <input
-          className="w-full focus:outline-none  "
+          className=" placeholder:dark:text-gray-300 dark:bg-gray-400 bg-gray-100 rounded-md p-2 cursor-text focus:outline-none flex-grow-1 w-full"
           placeholder="Search Here"
         ></input>
       </div>
-      <div onClick={addDefaultLanes} className="topbarmenuicons">
-        Add Default Lanes
-      </div>
-      <div onClick={addDummyCards} className="topbarmenuicons">
-        Add 5 Dummy Cards
-      </div>
-      <ThemeSwitch />
+
       <div
         onClick={() => {
           props.setshowLaneSettingsModal(true);
@@ -62,6 +29,7 @@ const Header = (props: {
         Settings
       </div>
       <div className="topbarmenuicons">Profile</div>
+      <ThemeSwitch />
     </div>
   );
 };
