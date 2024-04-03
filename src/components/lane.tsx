@@ -79,7 +79,7 @@ const LaneElement = (props: { lane: Lane; setShow: any; order: number }) => {
         //   handleLaneDrop(e as PointerEvent, props.lane);
         // }}
         id={props.lane.id + ""}
-        className="laneitem font-sans justify-between flex-col flex max-w-64  min-w-48 border-solid border-4 rounded-md border-gray-300 shadow-lg"
+        className="laneitem font-sans justify-between flex-col  flex max-w-64  min-w-48 border-solid border-4 rounded-md border-gray-300 shadow-lg"
       >
         <div className=" flex flex-col justify-between w-full items-center laneheader mb-2 font-mono p-2 ">
           <label className=" mb-4 text-center">{props.lane.name}</label>

@@ -187,11 +187,11 @@ const LaneSettingsModal = (props: {
   if (props.showLaneSettingsModal) {
     return (
       <div
-        className=" bg-transparent backdrop-blur-sm w-full h-full fixed flex items-center justify-center  "
+        className=" bg-transparent backdrop-blur-sm w-full h-full fixed flex items-center justify-center z-[1000]  "
         onClick={(e) => handleoutsideclick(e)}
       >
         {showDeletionConfirmation && (
-          <div className="addlanemodal shadow-xl fixed p-6 overflow-y-auto overflow-x-hidden flex-grow-0 shadow-gray-400  hover:bg-slate-200  bg-slate-200  font-sans justify-between flex-col flex w-96  h-min-48 border-solid border-4 rounded-lg border-gray-400 z-[1000]">
+          <div className="addlanemodal ">
             {canDelete ? (
               <div className="flex flex-col w-full">
                 <h3>Are you sure you want to delete this lane?</h3>
@@ -229,11 +229,9 @@ const LaneSettingsModal = (props: {
             onClick={(e) => {
               e.stopPropagation();
             }}
-            className="addlanemodal shadow-xl fixed p-6 overflow-y-auto overflow-x-hidden flex-grow-0 shadow-gray-400  hover:bg-slate-200  bg-slate-200  font-sans justify-between flex-col flex w-96  h-min-48 border-solid border-4 rounded-lg border-gray-400 z-[1000]"
+            className="addlanemodal"
           >
-            <div className="block mb-12 text-lg font-medium text-gray-900 dark:text-white">
-              Add new lane
-            </div>
+            <h2 className="block mb-6 text-lg font-medium ">Add new lane</h2>
             <form>
               <label className="forminputlabel" htmlFor="inputnewlanedesc">
                 Lane Name
@@ -281,114 +279,110 @@ const LaneSettingsModal = (props: {
           </div>
         ) : null}
         <div
-          className=" dark:border-2 dark:border-gray-200 dark:border-solid w-max-3/4 overflow-auto modalwindow shadow-xl p-6 flex-grow-0 shadow-gray-400 w-auto bg-gray-200 dark:bg-gray-400   h-auto font-sans justify-between flex-col flex max-w-[400px] min-w-[300px] min-h-52 max-h-[600px] border-solid border-4 rounded-lg border-gray-400 z-[700]"
+          className="modalwindow"
           onClick={(e) => {
             e.stopPropagation();
             setShowAddLaneModal(false);
             setShowDeletionConfirmation(false);
           }}
         >
-          <div className="flex flex-row w-full justify-between mb-8 ">
-            <div className="font-sans self-start flex  ">Lane Settings</div>
-            <motion.img
-              drag={false}
-              onTap={() => {
-                setShowAddLaneModal(true);
-              }}
-              alt="Add New Card"
-              whileHover={{ scale: 1.5 }}
-              src="/svg/add_icon.svg"
-            ></motion.img>{" "}
-          </div>
-          <Reorder.Group
-            className="w-full"
-            axis="y"
-            values={items}
-            onReorder={handleReorder}
-          >
-            {items.map((item) => (
-              <Reorder.Item key={item.id} value={item}>
-                <div className="cardmain flex flex-row my-2 items-center w-full justify-between ">
-                  <div className="flex-grow">{item.name}</div>
-                  <div>
+          <div className="section-box">
+            <div className="flex flex-row w-full justify-between mb-2 flex-shrink-1">
+              <div className="font-sans self-start flex  ">Lane Settings</div>
+              <motion.img
+                drag={false}
+                onTap={() => {
+                  setShowAddLaneModal(true);
+                }}
+                alt="Add New Card"
+                whileHover={{ scale: 1.5 }}
+                src="/svg/add_icon.svg"
+              ></motion.img>{" "}
+            </div>
+
+            <Reorder.Group
+              className="w-full"
+              axis="y"
+              values={items}
+              onReorder={handleReorder}
+            >
+              {items.map((item) => (
+                <Reorder.Item key={item.id} value={item}>
+                  <div className="cardmain flex flex-row my-2 items-center w-full justify-between ">
+                    <div className="flex-grow">{item.name}</div>
                     <div>
-                      <motion.div
-                        key={item.dbid}
-                        animate={item.active ? "unchecked" : "checked"}
-                        className="relative w-16 h-8 flex items-center flex-shrink-0 ml-4 p-1 rounded-full  cursor-pointer z-50"
-                        variants={backgroundVariants}
-                        onTap={() => {
-                          LaneActiveChanged(item);
-                        }}
-                      >
-                        <motion.span
-                          key={item.id}
-                          className="w-8 h-6 bg-white rounded-full shadow-md flex justify-center items-center"
-                          layout
-                          variants={sliderVariants}
+                      <div>
+                        <motion.div
+                          key={item.dbid}
+                          animate={item.active ? "unchecked" : "checked"}
+                          className="relative w-16 h-8 flex items-center flex-shrink-0 ml-4 p-1 rounded-full  cursor-pointer z-50"
+                          variants={backgroundVariants}
+                          onTap={() => {
+                            LaneActiveChanged(item);
+                          }}
                         >
-                          {item.active ? (
-                            <motion.div
-                              className="w-4 h-4 z-40"
-                              animate="unchecked"
-                            />
-                          ) : null}
-                        </motion.span>
-                      </motion.div>
+                          <motion.span
+                            key={item.id}
+                            className="w-8 h-6 bg-white rounded-full shadow-md flex justify-center items-center"
+                            layout
+                            variants={sliderVariants}
+                          >
+                            {item.active ? (
+                              <motion.div
+                                className="w-4 h-4 z-40"
+                                animate="unchecked"
+                              />
+                            ) : null}
+                          </motion.span>
+                        </motion.div>
+                      </div>
+                    </div>
+
+                    <div className="ml-2">
+                      {!item.default ? (
+                        <motion.img
+                          id={item.dbid.toString()}
+                          drag={false}
+                          onTap={(e) => {
+                            setShowDeletionConfirmation(true);
+                            HandleDeletability(item.id);
+                          }}
+                          alt="Delete Lane"
+                          whileHover={{ scale: 1.5 }}
+                          src="/svg/delete.svg"
+                        ></motion.img>
+                      ) : (
+                        <img
+                          {...(item.default
+                            ? {
+                                title:
+                                  "Default Lane cannot be deleted but can be disabled",
+                              }
+                            : null)}
+                          className="disabled"
+                          alt="Add New Card"
+                          src="/svg/delete_inactive.svg"
+                        ></img>
+                      )}
                     </div>
                   </div>
+                </Reorder.Item>
+              ))}
+            </Reorder.Group>
+          </div>
+          <div className="  section-box">
+            <h2 className=" mb-1">Default Settings</h2>
 
-                  <div className="ml-2">
-                    {!item.default ? (
-                      <motion.img
-                        id={item.dbid.toString()}
-                        drag={false}
-                        onTap={(e) => {
-                          setShowDeletionConfirmation(true);
-                          HandleDeletability(item.id);
-                        }}
-                        alt="Delete Lane"
-                        whileHover={{ scale: 1.5 }}
-                        src="/svg/delete.svg"
-                      ></motion.img>
-                    ) : (
-                      <img
-                        {...(item.default
-                          ? {
-                              title:
-                                "Default Lane cannot be deleted but can be disabled",
-                            }
-                          : null)}
-                        className="disabled"
-                        alt="Add New Card"
-                        src="/svg/delete_inactive.svg"
-                      ></img>
-                    )}
-                  </div>
-                </div>
-              </Reorder.Item>
-            ))}
-          </Reorder.Group>
-          <h2 className="cursor-none my-4">Default Settings</h2>
-
-          <button
-            className=" mb-2 dark:border-dark p-1 border-light shadow-lg bg-gray-100 hover:bg-gray-50  cursor-pointer"
-            onClick={addDefaultLanes}
-          >
-            Reset to default lanes
-          </button>
-          <button
-            className=" dark:border-dark p-1 mb-2 border-light shadow-lg bg-gray-100 hover:bg-gray-50  cursor-pointer"
-            onClick={deleteAllCards}
-          >
-            Delete all cards
-          </button>
-          <button
-            className=" dark:border-dark p-1 border-light shadow-lg bg-gray-100 hover:bg-gray-50  cursor-pointer"
-            onClick={addDummyCards}
-          >
-            Add 5 dummy cards
-          </button>
+            <button className=" settings-button" onClick={addDefaultLanes}>
+              Reset to default lanes
+            </button>
+            <button className=" settings-button" onClick={deleteAllCards}>
+              Delete all cards
+            </button>
+            <button className=" settings-button" onClick={addDummyCards}>
+              Add 5 dummy cards
+            </button>
+          </div>
         </div>
       </div>
     );
