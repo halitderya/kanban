@@ -20,7 +20,7 @@ const Lanecontainer = (props: { show: any }) => {
 
   return (
     <>
-      <motion.div className="h-full ">
+      <motion.div className=" flex-wrap  overflow-auto pb-10">
         <div
           className="lanecontainer box-border font-mono flex-nowrap justify-between flex flex-column 
         "

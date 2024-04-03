@@ -31,7 +31,7 @@ const ThemeSwitch = () => {
   };
 
   return (
-    <motion.div whileHover={{ scale: 1.1 }} className="p-2 text-xl">
+    <motion.div whileHover={{ scale: 1.1 }} className="p-2 text-xl z-10">
       <motion.div
         initial={false}
         animate={isChecked ? "checked" : "unchecked"}

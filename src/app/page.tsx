@@ -12,7 +12,7 @@ const Page = () => {
 
   return (
     <>
-      <div className=" flex flex-col p-2">
+      <div className=" h-dvh  flex flex-col p-2">
         {showModal ? (
           <CardModal
             setShowModal={setShowModal}

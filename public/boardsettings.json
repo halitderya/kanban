@@ -1,11 +1,11 @@
 {
     "kanbanBoard": {
       "board_settings": {
-        "board_name": "Proje Takip",
-        "visibility": "private",
-        "background_color": "#f2f2f2",
-        "allow_comments": true,
-        "due_date_notifications": false
+        "setting_1": "",
+        "setting_2": "",
+        "setting_3": "",
+        "setting_4": false,
+        "setting_5": false
       },
       "lanes": [
 
