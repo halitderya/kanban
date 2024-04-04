@@ -15,7 +15,9 @@ import { Card } from "@/types/cardtype";
 const LaneElement = (props: { lane: Lane; setShow: any; order: number }) => {
   const controls = useAnimationControls();
   const dispatch = useDispatch<AppDispatch>();
-
+  const searchterm: string = useSelector(
+    (state: RootState) => state.searchterm.value
+  );
   const cardsData: { [key: string]: Card } | null = useSelector(
     (state: RootState) => state.carddata.data
   );
@@ -96,36 +98,41 @@ const LaneElement = (props: { lane: Lane; setShow: any; order: number }) => {
         </div>
 
         <hr></hr>
+        <p>{searchterm}</p>
 
         <div className=" cardcontainer flex  flex-col w-full  p-2 justify-start">
           {cardsData &&
-            Object.values(cardsData).map((c) => {
-              if (c.lane === props.lane.id && !c.archived) {
-                return (
-                  <motion.div
-                    className="motiondiv border-none"
-                    dragElastic={0.1}
-                    whileDrag={{ rotate: 10 }}
-                    z-index="50"
-                    whileHover={{ scale: 1.1 }}
-                    animate={controls}
-                    onDragEnd={(e) => {
-                      handleCardDropped(e as PointerEvent, c);
-                    }}
-                    dragMomentum={false}
-                    key={c.id}
-                    drag
-                  >
-                    <CardComponent
-                      showModal={props.setShow}
+            Object.values(cardsData)
+              .filter((f) =>
+                f.name.toLowerCase().includes(searchterm.toLowerCase())
+              )
+              .map((c) => {
+                if (c.lane === props.lane.id && !c.archived) {
+                  return (
+                    <motion.div
+                      className="motiondiv border-none"
+                      dragElastic={0.1}
+                      whileDrag={{ rotate: 10 }}
+                      z-index="50"
+                      whileHover={{ scale: 1.1 }}
+                      animate={controls}
+                      onDragEnd={(e) => {
+                        handleCardDropped(e as PointerEvent, c);
+                      }}
+                      dragMomentum={false}
                       key={c.id}
-                      card={c}
-                    />
-                  </motion.div>
-                );
-              }
-              return null;
-            })}
+                      drag
+                    >
+                      <CardComponent
+                        showModal={props.setShow}
+                        key={c.id}
+                        card={c}
+                      />
+                    </motion.div>
+                  );
+                }
+                return null;
+              })}
         </div>
       </motion.div>
     </>

@@ -3,13 +3,17 @@ import {laneSlice} from '@/features/lane/laneSlice';
  import { cardSlice } from '@/features/card/cardSlice';
 import { selectedCardSlice } from '@/features/card/selectedCardSlice';
 import { sortMiddleware } from '@/features/lane/sortingMiddleware';
+import searchSlice from '@/features/search/searchSlice';
 
-export const store = configureStore({
+
+ export const store = configureStore({
   reducer: {
    // counter: counterSlice,
     lanedata: laneSlice.reducer, 
      carddata: cardSlice.reducer, 
-   selectedcard: selectedCardSlice.reducer
+   selectedcard: selectedCardSlice.reducer,
+   searchterm:searchSlice
+   
  
   },
   middleware: (getDefaultMiddleware) =>
