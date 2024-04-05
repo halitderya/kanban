@@ -13,12 +13,12 @@ const Page = () => {
   return (
     <>
       <div className=" h-dvh  flex flex-col p-2">
-        {showModal ? (
+        {/* {showModal ? (
           <CardModal
             setShowModal={setShowModal}
             showModal={showModal}
           ></CardModal>
-        ) : null}
+        ) : null} */}
         {showLaneSettingsModal ? (
           <LaneSettingsModal
             setshowLaneSettingsModal={setshowLaneSettingsModal}

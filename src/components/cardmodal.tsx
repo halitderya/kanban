@@ -4,16 +4,27 @@ import { Card, CommentType } from "@/types/cardtype";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../app/store";
 import { motion } from "framer-motion";
-import { updateCard, updateCardDataThunk } from "@/features/card/cardSlice";
+import {
+  addCardThunk,
+  fetchCardDataThunk,
+  updateCardDataThunk,
+} from "@/features/card/cardSlice";
 import { selectCard } from "@/features/card/selectedCardSlice";
-import { current } from "@reduxjs/toolkit";
+import { Lane } from "@/types/linetype";
 
-const CardModal = (props: { setShowModal: any; showModal: any }) => {
+const CardModal = (props: {
+  setShowModal: any;
+  showModal: any;
+  lane: Lane;
+}) => {
   const selectedCardData = useSelector(
     (state: RootState) => state.selectedcard
   );
   const selectedCard = selectedCardData.selectedCard || null;
+
   const dispatch = useDispatch<AppDispatch>();
+  const [cardName, setCardName] = useState<string>("");
+  const [cardDesc, setCardDesc] = useState<string>("");
   const [cardAsState, setCardAsState] = useState<Card | null>(null);
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [newComment, setNewComment] = useState<CommentType | null>({
@@ -32,27 +43,52 @@ const CardModal = (props: { setShowModal: any; showModal: any }) => {
   function handleoutsideclick() {
     props.setShowModal(false);
     setFirstLoad(true);
-
     dispatch(selectCard(null));
+    dispatch(fetchCardDataThunk());
   }
-  async function savecard() {
-    if (!selectedCard) return;
-
-    const updated = {
-      ...(selectedCard as Card),
-      description:
-        cardAsState?.description !== undefined ? cardAsState?.description : "",
-      comments:
-        cardAsState?.comments !== undefined
-          ? cardAsState?.comments
-          : new Array<CommentType>(),
-      archived: cardAsState?.archived,
-      lane: cardAsState?.lane,
-      name: cardAsState?.name,
+  function handleSaveNewCard(e: React.SyntheticEvent): void {
+    e.preventDefault();
+    const newCard = {
+      name: cardName,
+      description: cardDesc,
+      created: Date.now().toString(),
+      archived: false,
+      owner: "owner1",
+      lane: props.lane.id,
     };
 
-    //we want to aviod run dispatch if the card is empty
-    !firstLoad ? dispatch(updateCardDataThunk(updated as Card)) : null;
+    dispatch(addCardThunk(newCard as Card))
+      .then((response) => {
+        console.log("response: ", response);
+        // Başarılı ekleme işlemi sonrası gereken işlemler burada yapılabilir.
+      })
+      .then(() => {
+        setCardName("");
+        setCardDesc("");
+        handleoutsideclick(); // Modal'ı kapat ve gerekli temizlik işlemlerini yap.
+      });
+  }
+
+  async function savecard(e?: React.SyntheticEvent) {
+    if (selectedCard) {
+      const updated = {
+        ...(selectedCard as Card),
+        description:
+          cardAsState?.description !== undefined
+            ? cardAsState?.description
+            : "",
+        comments:
+          cardAsState?.comments !== undefined
+            ? cardAsState?.comments
+            : new Array<CommentType>(),
+        archived: cardAsState?.archived,
+        lane: cardAsState?.lane,
+        name: cardAsState?.name,
+      };
+
+      //we want to aviod run dispatch if the card is empty
+      !firstLoad ? dispatch(updateCardDataThunk(updated as Card)) : null;
+    }
 
     setFirstLoad(false);
   }
@@ -70,8 +106,6 @@ const CardModal = (props: { setShowModal: any; showModal: any }) => {
   }
 
   async function cardArchivedChanged() {
-    console.log(formatDateTime());
-
     setCardAsState((current) => {
       if (!current) return null;
 
@@ -82,7 +116,20 @@ const CardModal = (props: { setShowModal: any; showModal: any }) => {
     savecard();
   }
 
+  function handleNewCardFieldUpdate(e: React.SyntheticEvent) {
+    switch (((e as React.SyntheticEvent).target as HTMLInputElement).id) {
+      case "name":
+        setCardName((e.target as HTMLInputElement).value);
+
+        break;
+
+      case "description":
+        setCardDesc((e.target as HTMLInputElement).value);
+        break;
+    }
+  }
   function handlecardupdate(e: React.SyntheticEvent) {
+    e.preventDefault();
     switch (((e as React.SyntheticEvent).target as HTMLInputElement).id) {
       case "description":
         setCardAsState((current) =>
@@ -127,11 +174,11 @@ const CardModal = (props: { setShowModal: any; showModal: any }) => {
     checked: { x: 24 },
     unchecked: { x: 0 },
   };
-
   const backgroundVariants = {
     unchecked: { backgroundColor: "#68D391" },
     checked: { backgroundColor: "#d25555" },
   };
+
   if (props.showModal) {
     return (
       <>
@@ -141,70 +188,109 @@ const CardModal = (props: { setShowModal: any; showModal: any }) => {
             handleoutsideclick();
           }}
         >
-          <div
-            className="modalwindow shadow-xl p-6 overflow-y-auto overflow-x-hidden flex-grow-0 shadow-gray-400 w-auto hover:bg-slate-200 laneitem bg-slate-200  h-auto
-             font-sans justify-between flex-col flex  max-w-[400px] min-w-[300px] min-h-52 max-h-[600px] border-solid border-4 rounded-lg border-gray-400  z-1000"
+          <form
+            className="modalwindow shadow-xl p-6 overflow-y-auto overflow-x-hidden flex-grow-0 shadow-gray-400 w-auto bg-gray-400  h-auto
+             font-sans justify-between flex-col flex  max-w-[400px] min-w-[300px] min-h-52 max-h-[600px] border-solid border-4 rounded-lg border-gray-200  z-1000"
             onClick={(e) => {
               e.stopPropagation();
             }}
           >
-            <div className="firstrow w-full flex mb-6 justify-center items-center">
-              <input
-                id="name"
-                type="text"
-                value={cardAsState?.name || ""}
-                onChange={(e) => {
-                  handlecardupdate(e);
-                }}
-                className="rounded-sm bg-transparent font-bold focus:outline-none"
-              ></input>
+            <div className="firstrow w-full flex mb-6 justify-center flex-col items-center">
+              <div className=" mb-4 text-start">
+                {selectedCard ? (
+                  <h2>
+                    Edit Card :{" "}
+                    {selectedCard.name.length > 10
+                      ? `${selectedCard.name.slice(0, 10)}...`
+                      : selectedCard.name}
+                  </h2>
+                ) : (
+                  <h2>Create Card</h2>
+                )}
+              </div>
 
+              {/* birinci bura */}
+              {selectedCard ? (
+                <input
+                  id="name"
+                  type="text"
+                  value={cardAsState?.name}
+                  onChange={(e) => {
+                    handlecardupdate(e);
+                  }}
+                  className=" forminput"
+                ></input>
+              ) : (
+                <input
+                  id="name"
+                  type="text"
+                  value={cardName}
+                  onChange={(e) => {
+                    handleNewCardFieldUpdate(e);
+                  }}
+                  className=" forminput"
+                ></input>
+              )}
               {/* toggle buraya */}
-              <motion.div whileHover={{ scale: 1.1 }} className="">
-                <motion.div
-                  animate={cardAsState?.archived ? "checked" : "unchecked"}
-                  className="relative w-16 h-8 flex items-center flex-shrink-0 ml-4 p-1 rounded-full  cursor-pointer z-50"
-                  variants={backgroundVariants}
-                  onTap={cardArchivedChanged}
-                >
-                  <motion.span
-                    className="w-8 h-6 bg-white rounded-full shadow-md flex justify-center items-center"
-                    layout
-                    variants={sliderVariants}
+
+              {selectedCard ? (
+                <motion.div whileHover={{ scale: 1.1 }} className="">
+                  <motion.div
+                    animate={cardAsState?.archived ? "checked" : "unchecked"}
+                    className="relative w-16 h-8 flex items-center flex-shrink-0 ml-4 p-1 rounded-full  cursor-pointer z-50"
+                    variants={backgroundVariants}
+                    onTap={cardArchivedChanged}
                   >
-                    {cardAsState?.archived ? (
-                      <motion.img
-                        src="/svg/archive.svg"
-                        className="w-4 h-4 z-40"
-                        animate="unchecked"
-                      />
-                    ) : null}
-                  </motion.span>
+                    <motion.span
+                      className="w-8 h-6 bg-white rounded-full shadow-md flex justify-center items-center"
+                      layout
+                      variants={sliderVariants}
+                    >
+                      {cardAsState?.archived ? (
+                        <motion.img
+                          src="/svg/archive.svg"
+                          className="w-4 h-4 z-40"
+                          animate="unchecked"
+                        />
+                      ) : null}
+                    </motion.span>
+                  </motion.div>
                 </motion.div>
-              </motion.div>
+              ) : null}
 
               {/* toggle bitti */}
             </div>
-            <input
-              id="description"
-              className="bg-slate-100 text-wrap w-full mb-4 "
-              value={cardAsState?.description || ""}
-              onChange={(e) => {
-                handlecardupdate(e);
-              }}
-              type="text"
-            ></input>
+
+            {/* ikinci buraya */}
+            {selectedCard ? (
+              <input
+                id="description"
+                className="forminput "
+                value={cardAsState?.description}
+                onChange={(e) => {
+                  handlecardupdate(e);
+                }}
+                type="text"
+              ></input>
+            ) : (
+              <input
+                id="description"
+                className="forminput "
+                value={cardDesc}
+                onChange={(e) => {
+                  handleNewCardFieldUpdate(e);
+                }}
+                type="text"
+              ></input>
+            )}
 
             <br />
 
-            {cardAsState?.comments !== undefined
+            {selectedCard && cardAsState?.comments !== undefined
               ? cardAsState?.comments.map((c, index) => (
-                  <div
-                    key={index}
-                    className="flex flex-col bg-none border-sm border-gray-500 rounded-xl border-2 w-full p-2 m-2"
-                  >
+                  <div key={index} className="section-box">
                     <input
-                      className="commentbubble flex-wrap font-sans text-m text-wrap bg-transparent"
+                      className="forminput"
                       key={index}
                       id="comment"
                       data-key={index}
@@ -222,47 +308,46 @@ const CardModal = (props: { setShowModal: any; showModal: any }) => {
                 ))
               : null}
 
-            <input
-              value={newComment?.comment}
-              onChange={(e) => {
-                setNewComment({
-                  comment: e.target.value,
-                  date: formatDateTime(),
-                } as CommentType);
-              }}
-              className="flex flex-col border-sm border-gray-500 border-2 w-full p-2 m-2"
-            ></input>
+            {selectedCard ? (
+              <input
+                placeholder="Comment"
+                value={newComment?.comment}
+                onChange={(e) => {
+                  setNewComment({
+                    comment: e.target.value,
+                    date: formatDateTime(),
+                  } as CommentType);
+                }}
+                className="forminput placeholder:font-black border-test"
+              ></input>
+            ) : null}
 
-            <button
-              id="addcomment"
-              className=" border-4 border-solid border-orange-400"
-              onClick={(e) => {
-                handlecardupdate(e);
-              }}
-            >
-              Click me
-            </button>
-
-            {/* 
-            <button
-              className="border-sm p-4 shadow-md shadow-gray-400 rounded-md w-24 my-4 text-l font-bold border-4 hover:shadow-md hover:shadow-green-200"
-              type="submit"
-              onClick={addcomment}
-            >
-              Add comment{" "}
-            </button> */}
-
-            {/* <button
-              className="border-sm p-4 shadow-md shadow-gray-400 rounded-md w-24 my-4 text-l font-bold border-4 hover:shadow-md hover:shadow-green-200"
-              type="submit"
-              onClick={() => {
-                savecard();
-                handleoutsideclick();
-              }}
-            >
-              Save
-            </button> */}
-          </div>
+            {!selectedCard ? (
+              <button
+                id="savebutton"
+                type="submit"
+                disabled={cardName === "" ? true : false}
+                className="settings-button "
+                onClick={(e) => {
+                  handleSaveNewCard(e);
+                }}
+              >
+                Save
+              </button>
+            ) : (
+              <button
+                id="addcomment"
+                type="submit"
+                disabled={newComment?.comment === "" ? true : false}
+                className=" settings-button dark:disabled:text-gray-600 disabled:hover:bg-none "
+                onClick={(e) => {
+                  handlecardupdate(e);
+                }}
+              >
+                Add Comment
+              </button>
+            )}
+          </form>
         </div>
       </>
     );

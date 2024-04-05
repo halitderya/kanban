@@ -112,6 +112,24 @@ export const populateAllCardsThunk = createAsyncThunk(
   },
   
 );
+//Thunk to add new Card
+
+export const addCardThunk = createAsyncThunk(
+  'data/addCard',
+  async (newCard: Card, thunkAPI) => {
+    const db = getDatabase();
+    const newCardKey = push(child(ref(db), 'kanbanBoard/cards')).key;
+    if (newCardKey === null) {
+      console.error('Failed to generate a new key for a card');
+      return null;
+    }
+    newCard.id = newCardKey;
+    await set(ref(db, 'kanbanBoard/cards/' + newCardKey), newCard);
+    return newCard;
+  },
+);
+
+
 
 // Thunk to fetch data by ID
 export const fetchCardIDThunk = createAsyncThunk<
@@ -158,6 +176,7 @@ export const cardSlice = createSlice({
     })
     .addCase(fetchCardIDThunk.fulfilled, (state, action) => {
         state.dataWithID = action.payload;}) 
+
     .addCase(updateCardDataThunk.fulfilled, (state, action) => {
 
 
