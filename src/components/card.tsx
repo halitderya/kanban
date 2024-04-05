@@ -5,11 +5,12 @@ import {
 } from "@/features/card/cardSlice";
 import { selectedCardSlice } from "@/features/card/selectedCardSlice";
 import { Card } from "@/types/cardtype";
+import { Lane } from "@/types/linetype";
 import { motion } from "framer-motion";
 import React from "react";
 import { useDispatch } from "react-redux";
 
-const CardComponent = (props: { card: Card; showModal: any }) => {
+const CardComponent = (props: { card: Card; showModal: any; lane: Lane }) => {
   const dispatch = useDispatch<AppDispatch>();
 
   function handleClick() {

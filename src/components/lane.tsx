@@ -9,10 +9,12 @@ import {
   updateCardDataThunk,
 } from "@/features/card/cardSlice";
 import { Card } from "@/types/cardtype";
+import CardModal from "./cardmodal";
 
 ////IMPORTS/////
 
 const LaneElement = (props: { lane: Lane; setShow: any; order: number }) => {
+  const [showModal, setShowModal] = useState<boolean>(false);
   const controls = useAnimationControls();
   const dispatch = useDispatch<AppDispatch>();
   const searchterm: string = useSelector(
@@ -73,6 +75,13 @@ const LaneElement = (props: { lane: Lane; setShow: any; order: number }) => {
 
   return (
     <>
+      {showModal ? (
+        <CardModal
+          lane={props.lane}
+          setShowModal={setShowModal}
+          showModal={showModal}
+        ></CardModal>
+      ) : null}
       <motion.div
         // drag
         animate={controls}
@@ -87,9 +96,10 @@ const LaneElement = (props: { lane: Lane; setShow: any; order: number }) => {
           <label className=" mb-4 text-center">{props.lane.name}</label>
 
           <motion.img
+            id={props.lane.id.toString()}
             drag={false}
             onTap={() => {
-              props.setShow(true);
+              setShowModal(true);
             }}
             alt="Add New Card"
             whileHover={{ scale: 2.5 }}
@@ -98,7 +108,6 @@ const LaneElement = (props: { lane: Lane; setShow: any; order: number }) => {
         </div>
 
         <hr></hr>
-        <p>{searchterm}</p>
 
         <div className=" cardcontainer flex  flex-col w-full  p-2 justify-start">
           {cardsData &&
@@ -124,9 +133,10 @@ const LaneElement = (props: { lane: Lane; setShow: any; order: number }) => {
                       drag
                     >
                       <CardComponent
-                        showModal={props.setShow}
+                        showModal={setShowModal}
                         key={c.id}
                         card={c}
+                        lane={props.lane}
                       />
                     </motion.div>
                   );
