@@ -26,7 +26,7 @@ const ThemeSwitch = () => {
   };
 
   const backgroundVariants = {
-    checked: { backgroundColor: "#68D391" },
+    checked: { backgroundColor: "#22c55e" },
     unchecked: { backgroundColor: "#D1D5DB" },
   };
 

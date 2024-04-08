@@ -175,8 +175,8 @@ const CardModal = (props: {
     unchecked: { x: 0 },
   };
   const backgroundVariants = {
-    unchecked: { backgroundColor: "#68D391" },
-    checked: { backgroundColor: "#d25555" },
+    checked: { backgroundColor: "#22c55e" },
+    unchecked: { backgroundColor: "#d25555" },
   };
 
   if (props.showModal) {
@@ -189,17 +189,17 @@ const CardModal = (props: {
           }}
         >
           <form
-            className="modalwindow shadow-xl p-6 overflow-y-auto overflow-x-hidden flex-grow-0 shadow-gray-400 w-auto bg-gray-400  h-auto
+            className="modalwindow shadow-md  p-6 overflow-y-auto overflow-x-hidden flex-grow-0 shadow-gray-100 w-auto dark:border-green-500 dark:bg-gray-600 h-auto gap-4
              font-sans justify-between flex-col flex  max-w-[400px] min-w-[300px] min-h-52 max-h-[600px] border-solid border-4 rounded-lg border-gray-200  z-1000"
             onClick={(e) => {
               e.stopPropagation();
             }}
           >
-            <div className="firstrow w-full flex mb-6 justify-center flex-col items-center">
-              <div className=" mb-4 text-start">
+            <div className="firstrow w-full text-xl flex mb-6 justify-center flex-col items-center text-gray-100">
+              <div className=" text-start">
                 {selectedCard ? (
                   <h2>
-                    Edit Card :{" "}
+                    Editing Card :{" "}
                     {selectedCard.name.length > 10
                       ? `${selectedCard.name.slice(0, 10)}...`
                       : selectedCard.name}
@@ -208,105 +208,106 @@ const CardModal = (props: {
                   <h2>Create Card</h2>
                 )}
               </div>
+            </div>
+            <fieldset className="section-box flex flex-col gap-6  dark:bg-gray-600">
+              <legend className=" text-md font-light">Card Details</legend>
+              <div className="flex flex-row ">
+                {/* birinci bura */}
+                {selectedCard ? (
+                  <input
+                    id="name"
+                    type="text"
+                    value={cardAsState?.name}
+                    onChange={(e) => {
+                      handlecardupdate(e);
+                    }}
+                    className=" forminput"
+                  ></input>
+                ) : (
+                  <input
+                    id="name"
+                    type="text"
+                    value={cardName}
+                    onChange={(e) => {
+                      handleNewCardFieldUpdate(e);
+                    }}
+                    className=" forminput"
+                  ></input>
+                )}
+                {/* toggle buraya */}
 
-              {/* birinci bura */}
+                {selectedCard ? (
+                  <motion.div whileHover={{ scale: 1.1 }} className="">
+                    <motion.div
+                      animate={!cardAsState?.archived ? "checked" : "unchecked"}
+                      className="relative w-16 h-8 flex items-center flex-shrink-0 ml-4 p-1 rounded-full  cursor-pointer z-50"
+                      variants={backgroundVariants}
+                      onTap={cardArchivedChanged}
+                    >
+                      <motion.span
+                        className="w-8 h-6 bg-white rounded-full shadow-md flex justify-center items-center"
+                        layout
+                        variants={sliderVariants}
+                      >
+                        {cardAsState?.archived ? (
+                          <motion.img
+                            src="/svg/archive.svg"
+                            className="w-4 h-4 z-40"
+                            animate="unchecked"
+                          />
+                        ) : null}
+                      </motion.span>
+                    </motion.div>
+                  </motion.div>
+                ) : null}
+
+                {/* toggle bitti */}
+              </div>
+
+              {/* ikinci buraya */}
               {selectedCard ? (
-                <input
-                  id="name"
-                  type="text"
-                  value={cardAsState?.name}
+                <textarea
+                  id="description"
+                  className="forminput "
+                  value={cardAsState?.description}
                   onChange={(e) => {
                     handlecardupdate(e);
                   }}
-                  className=" forminput"
-                ></input>
+                  // type="text"
+                ></textarea>
               ) : (
                 <input
-                  id="name"
-                  type="text"
-                  value={cardName}
+                  id="description"
+                  className="forminput "
+                  value={cardDesc}
                   onChange={(e) => {
                     handleNewCardFieldUpdate(e);
                   }}
-                  className=" forminput"
+                  type="text"
                 ></input>
               )}
-              {/* toggle buraya */}
+            </fieldset>
 
-              {selectedCard ? (
-                <motion.div whileHover={{ scale: 1.1 }} className="">
-                  <motion.div
-                    animate={cardAsState?.archived ? "checked" : "unchecked"}
-                    className="relative w-16 h-8 flex items-center flex-shrink-0 ml-4 p-1 rounded-full  cursor-pointer z-50"
-                    variants={backgroundVariants}
-                    onTap={cardArchivedChanged}
-                  >
-                    <motion.span
-                      className="w-8 h-6 bg-white rounded-full shadow-md flex justify-center items-center"
-                      layout
-                      variants={sliderVariants}
-                    >
-                      {cardAsState?.archived ? (
-                        <motion.img
-                          src="/svg/archive.svg"
-                          className="w-4 h-4 z-40"
-                          animate="unchecked"
-                        />
-                      ) : null}
-                    </motion.span>
-                  </motion.div>
-                </motion.div>
-              ) : null}
-
-              {/* toggle bitti */}
-            </div>
-
-            {/* ikinci buraya */}
-            {selectedCard ? (
-              <input
-                id="description"
-                className="forminput "
-                value={cardAsState?.description}
-                onChange={(e) => {
-                  handlecardupdate(e);
-                }}
-                type="text"
-              ></input>
-            ) : (
-              <input
-                id="description"
-                className="forminput "
-                value={cardDesc}
-                onChange={(e) => {
-                  handleNewCardFieldUpdate(e);
-                }}
-                type="text"
-              ></input>
-            )}
-
-            <br />
-
-            {selectedCard && cardAsState?.comments !== undefined
-              ? cardAsState?.comments.map((c, index) => (
-                  <div key={index} className="section-box">
+            {selectedCard && cardAsState?.comments !== undefined ? (
+              <fieldset className="section-box flex flex-col gap-4  dark:bg-gray-600 dark:shadow-sm dark:shadow-gray-100">
+                <legend className="text-md font-light">Comments</legend>
+                {cardAsState?.comments.map((c, index) => (
+                  <div key={index} className="flex flex-col">
                     <input
-                      className="forminput"
-                      key={index}
-                      id="comment"
-                      data-key={index}
+                      className="forminput "
+                      id={`comment-${index}`}
                       disabled
                       type="text"
+                      value={c.comment}
                       onChange={(e) => {
                         handlecardupdate(e);
                       }}
-                      value={c.comment}
-                    ></input>
-                    <div className="text-xs mt-2 font-thin self-end ">
-                      {c.date}
-                    </div>
+                    />
+                    <div className="text-xs font-thin self-end">{c.date}</div>
                   </div>
-                ))
-              : null}
+                ))}
+              </fieldset>
+            ) : null}
 
             {selectedCard ? (
               <input
@@ -318,16 +319,15 @@ const CardModal = (props: {
                     date: formatDateTime(),
                   } as CommentType);
                 }}
-                className="forminput placeholder:font-black border-test"
+                className="forminput placeholder:font-black "
               ></input>
             ) : null}
-
             {!selectedCard ? (
               <button
                 id="savebutton"
                 type="submit"
                 disabled={cardName === "" ? true : false}
-                className="settings-button "
+                className="settings-button disabled:cursor-pointer:none "
                 onClick={(e) => {
                   handleSaveNewCard(e);
                 }}
