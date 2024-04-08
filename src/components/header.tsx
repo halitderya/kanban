@@ -27,13 +27,13 @@ const Header = (props: {
 
   return (
     <div className=" header flex justify-between cursor-pointer items-center mb-4 w-full shadow-xl gap-x-8 ">
-      <div className=" h-full hidden md:flex icondiv w-64   max-w-xl mb-2  dark:border-gray-200  dark:bg-gray-400  flex-row bg-gray-100 rounded-md flex-shrink-0  flex-grow mx-1 items-center border-2 border-solid ">
+      <div className=" h-full hidden md:flex icondiv w-64   max-w-xl mb-2  dark:border-green-500   dark:bg-gray-600  flex-row bg-gray-100 rounded-md flex-shrink-0  flex-grow mx-1 items-center border-4 border-solid ">
         <SearchIcon></SearchIcon>
         <input
           onChange={(e) => {
             handleSearchTerm(e);
           }}
-          className=" placeholder:dark:text-gray-300 w-full text-lg  dark:bg-gray-400 bg-gray-100 rounded-md p-2  cursor-text focus:outline-none width-96 "
+          className=" placeholder:dark:text-gray-100 w-full text-lg  dark:bg-gray-600 bg-gray-100 rounded-md p-2  cursor-text focus:outline-none width-96 "
           placeholder="Search Cards"
         ></input>
       </div>
