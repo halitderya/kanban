@@ -7,6 +7,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/app/store";
 import { setSearch } from "@/features/search/searchSlice";
+import ArchivedIcon from "./iconcomponents/archivedicon";
 
 const Header = (props: {
   setshowLaneSettingsModal: any;
@@ -26,32 +27,41 @@ const Header = (props: {
   }, [debouncedSearchTerm]);
 
   return (
-    <div className=" header flex justify-between cursor-pointer items-center mb-4 w-full shadow-xl gap-x-8 ">
-      <div className=" h-full hidden md:flex icondiv w-64   max-w-xl mb-2  dark:border-green-500   dark:bg-gray-600  flex-row bg-gray-100 rounded-md flex-shrink-0  flex-grow mx-1 items-center border-4 border-solid ">
+    <div className=" header flex justify-between center cursor-pointer p-2 items-center mb-4 w-full shadow-xl gap-x-8 border-solid border-4 border-gray-400 rounded-lg dark:bg-gray-600">
+      <div className="  h-full flex max-md:hidden  w-64  max-w-xl    dark:bg-gray-600  flex-row bg-gray-100 rounded-md flex-shrink-0  flex-grow  items-center  ">
         <SearchIcon></SearchIcon>
         <input
           onChange={(e) => {
             handleSearchTerm(e);
           }}
-          className=" placeholder:dark:text-gray-100 w-full text-lg  dark:bg-gray-600 bg-gray-100 rounded-md p-2  cursor-text focus:outline-none width-96 "
+          className=" placeholder:dark:text-gray-100 w-full text-lg  dark:bg-gray-600 bg-gray-100 rounded-md  cursor-text focus:outline-none  "
           placeholder="Search Cards"
         ></input>
       </div>
-      <div className=" w-96   text-center h-full text-nowrap flex-shrink content-center ">
+      <div className=" w-auto  text-lg text-center self-start    h-full text-nowrap flex-shrink content-center ">
         Kanban Board
       </div>
-      <div className="flex w-52  flex-row items-center flex-shrink-0 flex-grow sm:flex-grow-0 justify-around  ">
+      <div className="flex w-auto  flex-row items-center flex-shrink-0 flex-grow-0 justify-between xs:border-test  box-content overflow-hidden gap-4 ">
         <div
+          className=""
+          onClick={() => {
+            props.setshowLaneSettingsModal(true);
+          }}
+        >
+          <ArchivedIcon></ArchivedIcon>
+        </div>
+        <div
+          className=""
           onClick={() => {
             props.setshowLaneSettingsModal(true);
           }}
         >
           <SettingsIcon></SettingsIcon>
         </div>
-        <div className=" ml-4">
+        <div className="">
           <ProfileIcon></ProfileIcon>
         </div>
-        <div className="">
+        <div className="pr-4">
           <ThemeSwitch />
         </div>
       </div>

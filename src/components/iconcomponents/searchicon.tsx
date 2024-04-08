@@ -3,7 +3,7 @@ import { useTheme } from "next-themes";
 
 const SearchIcon = () => {
   const { theme } = useTheme();
-  const fillColor = theme === "dark" ? "#FFFFFF" : "#616161";
+  const fillColor = theme === "dark" ? "#22c55e" : "#616161";
 
   return (
     <svg

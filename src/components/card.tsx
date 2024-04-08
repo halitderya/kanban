@@ -23,8 +23,7 @@ const CardComponent = (props: { card: Card; showModal: any; lane: Lane }) => {
       onTap={handleClick}
       className="cardcomponent card w-full  border-solid border-4 rounded-lg p-2 my-1 shadow-lg  border-gray-400 "
     >
-      <div className="font-mono">{props.card?.name}</div>
-      <br></br>
+      <div className="font-mono text-gray-100">{props.card?.name}</div>
       <div className="">{props.card?.description}</div>
       <div>{props.card?.owner}</div>
     </motion.div>

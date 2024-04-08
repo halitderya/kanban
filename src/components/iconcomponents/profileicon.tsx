@@ -3,7 +3,7 @@ import { useTheme } from "next-themes";
 
 const ProfileIcon = () => {
   const { theme } = useTheme();
-  const fillColor = theme === "dark" ? "#FFFFFF" : "#616161";
+  const fillColor = theme === "dark" ? "#f3f4f6" : "#616161";
 
   return (
     <svg

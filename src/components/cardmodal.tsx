@@ -189,7 +189,7 @@ const CardModal = (props: {
           }}
         >
           <form
-            className="modalwindow shadow-md  p-6 overflow-y-auto overflow-x-hidden flex-grow-0 shadow-gray-100 w-auto dark:border-green-500 dark:bg-gray-600 h-auto gap-4
+            className="modalwindow shadow-md  p-6 overflow-y-auto overflow-x-hidden flex-grow-0 shadow-gray-100 w-auto dark:border-gray-400 dark:bg-gray-600 h-auto gap-4
              font-sans justify-between flex-col flex  max-w-[400px] min-w-[300px] min-h-52 max-h-[600px] border-solid border-4 rounded-lg border-gray-200  z-1000"
             onClick={(e) => {
               e.stopPropagation();
@@ -209,58 +209,61 @@ const CardModal = (props: {
                 )}
               </div>
             </div>
-            <fieldset className="section-box flex flex-col gap-6  dark:bg-gray-600">
+            <fieldset className="section-box flex flex-col gap-6 ">
               <legend className=" text-md font-light">Card Details</legend>
               <div className="flex flex-row ">
                 {/* birinci bura */}
-                {selectedCard ? (
-                  <input
-                    id="name"
-                    type="text"
-                    value={cardAsState?.name}
-                    onChange={(e) => {
-                      handlecardupdate(e);
-                    }}
-                    className=" forminput"
-                  ></input>
-                ) : (
-                  <input
-                    id="name"
-                    type="text"
-                    value={cardName}
-                    onChange={(e) => {
-                      handleNewCardFieldUpdate(e);
-                    }}
-                    className=" forminput"
-                  ></input>
-                )}
-                {/* toggle buraya */}
+                <div className="firstrow flex flex-row items-center">
+                  {selectedCard ? (
+                    <input
+                      id="name"
+                      type="text"
+                      value={cardAsState?.name}
+                      onChange={(e) => {
+                        handlecardupdate(e);
+                      }}
+                      className=" forminput"
+                    ></input>
+                  ) : (
+                    <input
+                      id="name"
+                      type="text"
+                      value={cardName}
+                      onChange={(e) => {
+                        handleNewCardFieldUpdate(e);
+                      }}
+                      className=" forminput"
+                    ></input>
+                  )}
+                  {/* toggle buraya */}
 
-                {selectedCard ? (
-                  <motion.div whileHover={{ scale: 1.1 }} className="">
-                    <motion.div
-                      animate={!cardAsState?.archived ? "checked" : "unchecked"}
-                      className="relative w-16 h-8 flex items-center flex-shrink-0 ml-4 p-1 rounded-full  cursor-pointer z-50"
-                      variants={backgroundVariants}
-                      onTap={cardArchivedChanged}
-                    >
-                      <motion.span
-                        className="w-8 h-6 bg-white rounded-full shadow-md flex justify-center items-center"
-                        layout
-                        variants={sliderVariants}
+                  {selectedCard ? (
+                    <motion.div whileHover={{ scale: 1.1 }} className="">
+                      <motion.div
+                        animate={
+                          !cardAsState?.archived ? "checked" : "unchecked"
+                        }
+                        className="relative w-16 h-8 flex items-center flex-shrink-0 ml-4 p-1 rounded-full  cursor-pointer z-50"
+                        variants={backgroundVariants}
+                        onTap={cardArchivedChanged}
                       >
-                        {cardAsState?.archived ? (
-                          <motion.img
-                            src="/svg/archive.svg"
-                            className="w-4 h-4 z-40"
-                            animate="unchecked"
-                          />
-                        ) : null}
-                      </motion.span>
+                        <motion.span
+                          className="w-8 h-6 bg-white rounded-full shadow-md flex justify-center items-center"
+                          layout
+                          variants={sliderVariants}
+                        >
+                          {cardAsState?.archived ? (
+                            <motion.img
+                              src="/svg/archive.svg"
+                              className="w-4 h-4 z-40"
+                              animate="unchecked"
+                            />
+                          ) : null}
+                        </motion.span>
+                      </motion.div>
                     </motion.div>
-                  </motion.div>
-                ) : null}
-
+                  ) : null}
+                </div>
                 {/* toggle bitti */}
               </div>
 
