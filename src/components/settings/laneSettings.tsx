@@ -21,6 +21,7 @@ import {
   populateDefaultLanesThunk,
   updateLaneDataThunk,
 } from "@/features/lane/laneSlice";
+import DragIcon from "../iconcomponents/dragicon";
 
 ////declarations
 
@@ -279,36 +280,38 @@ const LaneSettingsModal = (props: {
           </div>
         ) : null}
         <div
-          className="modalwindow"
+          className="modalwindow dark:bg-gray-600"
           onClick={(e) => {
             e.stopPropagation();
             setShowAddLaneModal(false);
             setShowDeletionConfirmation(false);
           }}
         >
-          <div className="section-box">
-            <div className="flex flex-row w-full justify-between mb-2 flex-shrink-1">
-              <div className="font-sans self-start flex  ">Lane Settings</div>
-              <motion.img
-                drag={false}
-                onTap={() => {
+          <fieldset className="section-box">
+            <legend className="">Lane Settings</legend>
+            <div className="flex dark:bg-gray-600 flex-row w-full justify-between mb-2 flex-shrink-1">
+              <button
+                className="settings-button w-full"
+                onClick={(e) => {
+                  e.stopPropagation();
                   setShowAddLaneModal(true);
                 }}
-                alt="Add New Card"
-                whileHover={{ scale: 1.5 }}
-                src="/svg/add_icon.svg"
-              ></motion.img>{" "}
+              >
+                {" "}
+                Add New Lane
+              </button>
             </div>
 
             <Reorder.Group
-              className="w-full"
+              className="w-full dark:bg-gray-600"
               axis="y"
               values={items}
               onReorder={handleReorder}
             >
               {items.map((item) => (
                 <Reorder.Item key={item.id} value={item}>
-                  <div className="cardmain flex flex-row my-2 items-center w-full justify-between ">
+                  <div className="cardmain flex flex-row my-2 items-center w-full justify-between dark:bg-gray-600">
+                    <DragIcon />
                     <div className="flex-grow">{item.name}</div>
                     <div>
                       <div>
@@ -369,10 +372,9 @@ const LaneSettingsModal = (props: {
                 </Reorder.Item>
               ))}
             </Reorder.Group>
-          </div>
-          <div className="  section-box">
-            <h2 className=" mb-1">Default Settings</h2>
-
+          </fieldset>
+          <fieldset className=" section-box">
+            <legend>Default Settings</legend>
             <button className=" settings-button" onClick={addDefaultLanes}>
               Reset to default lanes
             </button>
@@ -382,7 +384,7 @@ const LaneSettingsModal = (props: {
             <button className=" settings-button" onClick={addDummyCards}>
               Add 5 dummy cards
             </button>
-          </div>
+          </fieldset>
         </div>
       </div>
     );

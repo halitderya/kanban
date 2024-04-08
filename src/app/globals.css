@@ -24,7 +24,7 @@ body {
     @apply flex justify-center content-center min-w-16 grow-0 h-full items-center hover:rounded-md p-4 hover:bg-gray-200 px-6;
   }
   .laneitem {
-    @apply font-sans  flex-col  flex max-w-64 dark:border-green-600 min-w-48 border-solid border-4 rounded-md border-gray-300 shadow-lg justify-center content-center  grow-0 h-full items-center hover:rounded-md;
+    @apply font-sans  flex-col  flex max-w-64 dark:border-gray-400 min-w-48 border-solid border-4 rounded-md border-gray-300 shadow-lg justify-center content-center  grow-0 h-full items-center hover:rounded-md;
   }
 }
 @layer base {
@@ -35,7 +35,7 @@ body {
     @apply dark:bg-gray-600 bg-gray-100;
   }
   .addlanemodal {
-    @apply shadow-xl fixed dark:text-white dark:bg-gray-400 dark:border-gray-200 p-6 overflow-y-auto overflow-x-hidden flex-grow-0 shadow-gray-400   bg-slate-200  font-sans justify-between flex-col flex w-96 border-solid border-4 rounded-lg border-gray-400 z-[1000];
+    @apply shadow-xl fixed dark:text-gray-100 dark:bg-gray-600 dark:border-gray-200 p-6 overflow-y-auto overflow-x-hidden flex-grow-0 shadow-gray-400   bg-slate-200  font-sans justify-between flex-col flex w-96 border-solid border-4 rounded-lg border-gray-400 z-[1000];
   }
   .forminput {
     @apply border-gray-300 text-sm rounded-lg  dark:border-4 dark:border-solid dark:border-gray-200 block w-full p-2.5 dark:bg-gray-600 focus:outline-none;
@@ -59,14 +59,14 @@ body {
     @apply border-2 rounded-md border-solid dark:border-gray-100 border-gray-400;
   }
   .section-box {
-    @apply border-solid dark:bg-gray-400 border-gray-300 p-2 drop-shadow-xl border-2 my-2  rounded-md flex flex-col w-full;
+    @apply border-solid  border-gray-100  dark:bg-gray-600 dark:border-gray-400 p-2 shadow-gray-600 shadow-md border-2 my-2 dark:shadow-gray-100 rounded-md flex flex-col w-full;
   }
   .settings-button {
     @apply dark:border-dark  dark:bg-gray-400  dark:hover:bg-gray-300 dark:hover:text-gray-600 p-1 mb-2 border-light shadow-lg bg-gray-200 hover:bg-gray-50 disabled:cursor-not-allowed  cursor-pointer;
   }
   .modalwindow {
     @apply fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 dark:border-2  dark:border-gray-200 dark:border-solid  
-    overflow-auto shadow-xl p-2 flex-grow-0 shadow-gray-400 w-auto bg-gray-200 dark:bg-gray-300   
+    overflow-auto shadow-md p-2 flex-grow-0 shadow-gray-100 w-auto bg-gray-200 dark:bg-gray-400   
     h-auto font-sans justify-between flex-col flex max-w-[400px] min-w-[300px] min-h-52 max-h-[600px] border-solid border-4 rounded-lg border-gray-400 z-[700];
   }
 }
