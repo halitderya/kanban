@@ -27,21 +27,21 @@ const Header = (props: {
   }, [debouncedSearchTerm]);
 
   return (
-    <div className=" header flex justify-between center cursor-pointer p-2 items-center mb-4 w-full shadow-xl gap-x-8 border-solid border-4 border-gray-400 rounded-lg dark:bg-gray-600">
-      <div className="  h-full flex max-md:hidden  w-64  max-w-xl    dark:bg-gray-600  flex-row bg-gray-100 rounded-md flex-shrink-0  flex-grow  items-center  ">
+    <div className=" header flex justify-between center cursor-pointer p-2 items-center mb-4 w-full rounded-lg gap-x-8 border-solid dark:bg-gray-600 shadow-md shadow-neutral-300 drop-shadow-md">
+      <div className="  h-full flex max-md:hidden border-2 w-64 max-w-xl dark:border-gray-100 dark:border-opacity-40     dark:bg-gray-600  flex-row bg-zinc-50 rounded-md flex-shrink-0  flex-grow  items-center  ">
         <SearchIcon></SearchIcon>
         <input
           onChange={(e) => {
             handleSearchTerm(e);
           }}
-          className=" placeholder:dark:text-gray-100 w-full text-lg  dark:bg-gray-600 bg-gray-100 rounded-md  cursor-text focus:outline-none  "
+          className=" placeholder:dark:text-gray-100 w-full text-lg  dark:bg-gray-600 bg-zinc-50 rounded-md  cursor-text focus:outline-none  "
           placeholder="Search Cards"
         ></input>
       </div>
       <div className=" w-auto  text-lg text-center self-start    h-full text-nowrap flex-shrink content-center ">
         Kanban Board
       </div>
-      <div className="flex w-auto  flex-row items-center flex-shrink-0 flex-grow-0 justify-between xs:border-test  box-content overflow-hidden gap-4 ">
+      <div className="flex w-auto  flex-row items-center flex-shrink-0 flex-grow-0 justify-between  box-content overflow-hidden max-sm:gap-1 gap-4 ">
         <div
           className=""
           onClick={() => {
@@ -61,7 +61,7 @@ const Header = (props: {
         <div className="">
           <ProfileIcon></ProfileIcon>
         </div>
-        <div className="pr-4">
+        <div className="pr-4 max-sm:pr-0">
           <ThemeSwitch />
         </div>
       </div>

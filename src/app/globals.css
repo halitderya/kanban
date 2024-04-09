@@ -24,27 +24,27 @@ body {
     @apply flex justify-center content-center min-w-16 grow-0 h-full items-center hover:rounded-md p-4 hover:bg-gray-200 px-6;
   }
   .laneitem {
-    @apply font-sans  flex-col  flex max-w-64 dark:border-gray-400 min-w-48 border-solid border-4 rounded-md border-gray-300 shadow-lg justify-center content-center  grow-0 h-full items-center hover:rounded-md;
+    @apply font-sans  flex-col  flex max-w-64 dark:border-gray-600 min-w-48 border-solid border-4 rounded-lg border-neutral-300 shadow-lg justify-center content-center  grow-0 h-full items-center;
   }
 }
 @layer base {
   body {
-    @apply dark:bg-gray-900 bg-gray-100  dark:text-gray-100 text-gray-700;
+    @apply dark:bg-gray-900 bg-zinc-50  dark:text-zinc-50 text-gray-700;
   }
   .card {
-    @apply dark:bg-gray-600 bg-gray-100;
+    @apply dark:bg-gray-600  w-full   shadow-gray-100 rounded-lg p-2 my-1 shadow-sm   bg-neutral-300 text-gray-900 dark:text-zinc-50;
   }
   .addlanemodal {
-    @apply shadow-xl fixed dark:text-gray-100 dark:bg-gray-600 dark:border-gray-200 p-6 overflow-y-auto overflow-x-hidden flex-grow-0 shadow-gray-400   bg-slate-200  font-sans justify-between flex-col flex w-96 border-solid border-4 rounded-lg border-gray-400 z-[1000];
+    @apply shadow-xl fixed dark:bg-gray-600 dark:border-gray-200 p-6 overflow-y-auto overflow-x-hidden flex-grow-0 shadow-gray-400   bg-slate-200  font-sans justify-between flex-col flex w-96 border-solid border-4 rounded-lg border-gray-400 z-[1000];
   }
   .forminput {
-    @apply border-gray-300 text-sm rounded-lg  dark:border-4 dark:border-solid dark:border-gray-200 block w-full p-2.5 dark:bg-gray-600 focus:outline-none;
+    @apply text-sm rounded-lg  border-2 border-solid block w-full p-2.5  bg-zinc-50  dark:border-zinc-50 dark:bg-gray-600 focus:outline-none;
   }
   .formsubmit {
     @apply text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800;
   }
   .forminputlabel {
-    @apply block mb-2 text-base mt-4  dark:text-gray-100  text-gray-900;
+    @apply block mb-2 text-base mt-4   text-gray-900;
   }
   .disabled {
     @apply bg-blend-darken;
@@ -56,17 +56,22 @@ body {
     @apply border-2 border-solid rounded-md  border-gray-200;
   }
   .border-light {
-    @apply border-2 rounded-md border-solid dark:border-gray-100 border-gray-400;
+    @apply border-2 rounded-md border-solid dark:border-gray-100 border-zinc-50;
   }
   .section-box {
-    @apply border-solid  border-gray-100  dark:bg-gray-600 dark:border-gray-400 p-2 shadow-gray-600 shadow-md border-2 my-2 dark:shadow-gray-100 rounded-md flex flex-col w-full;
+    @apply border-gray-100 border-opacity-30  dark:bg-gray-600 p-1 shadow-gray-600 shadow-sm  my-2 dark:shadow-gray-100 rounded-md flex flex-col w-full;
   }
   .settings-button {
-    @apply dark:border-dark  dark:bg-gray-400  dark:hover:bg-gray-300 dark:hover:text-gray-600 p-1 mb-2 border-light shadow-lg bg-gray-200 hover:bg-gray-50 disabled:cursor-not-allowed  cursor-pointer;
+    @apply dark:bg-gray-600 disabled:text-gray-900 dark:text-slate-100 dark:disabled:hover:bg-gray-600 dark:hover:bg-gray-400 p-1 mb-2 border-light shadow-lg   disabled:cursor-not-allowed  cursor-pointer;
   }
   .modalwindow {
-    @apply fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 dark:border-2  dark:border-gray-200 dark:border-solid  
-    overflow-auto shadow-md p-2 flex-grow-0 shadow-gray-100 w-auto bg-gray-200 dark:bg-gray-400   
-    h-auto font-sans justify-between flex-col flex max-w-[400px] min-w-[300px] min-h-52 max-h-[600px] border-solid border-4 rounded-lg border-gray-400 z-[700];
+    @apply fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
+
+    overflow-y-auto overflow-x-hidden   dark:bg-gray-600  h-auto gap-4
+    font-sans justify-between flex-col flex w-11/12 max-w-[400px]  rounded-lg 
+
+
+    p-2 flex-grow-0    bg-zinc-50 shadow-md drop-shadow-lg shadow-neutral-300
+       min-h-52 max-h-[600px]   border-gray-400 z-[1000];
   }
 }

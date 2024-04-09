@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 
-const ProfileIcon = () => {
+const ProfileIconInline = () => {
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -11,9 +11,9 @@ const ProfileIcon = () => {
 
   const fillColor = mounted
     ? theme === "dark"
-      ? "#22c55e"
-      : "#616161"
-    : "#616161";
+      ? "#e0f2fe"
+      : "#000000"
+    : "#000000";
 
   if (!mounted) {
     return null;
@@ -32,4 +32,4 @@ const ProfileIcon = () => {
   );
 };
 
-export default ProfileIcon;
+export default ProfileIconInline;

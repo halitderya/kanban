@@ -1,9 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 
 const SearchIcon = () => {
   const { theme } = useTheme();
-  const fillColor = theme === "dark" ? "#22c55e" : "#616161";
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const fillColor = mounted
+    ? theme === "dark"
+      ? "#22c55e"
+      : "#616161"
+    : "#616161";
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <svg

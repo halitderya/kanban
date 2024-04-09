@@ -11,6 +11,7 @@ import {
 } from "@/features/card/cardSlice";
 import { selectCard } from "@/features/card/selectedCardSlice";
 import { Lane } from "@/types/linetype";
+import { capitalizeFirstLetters } from "@/utils/capitalizefirstletter";
 
 const CardModal = (props: {
   setShowModal: any;
@@ -189,20 +190,21 @@ const CardModal = (props: {
           }}
         >
           <form
-            className="modalwindow shadow-md  p-6 overflow-y-auto overflow-x-hidden flex-grow-0 shadow-gray-100 w-auto dark:border-gray-400 dark:bg-gray-600 h-auto gap-4
-             font-sans justify-between flex-col flex  max-w-[400px] min-w-[300px] min-h-52 max-h-[600px] border-solid border-4 rounded-lg border-gray-200  z-1000"
+            className="modalwindow  "
             onClick={(e) => {
               e.stopPropagation();
             }}
           >
-            <div className="firstrow w-full text-xl flex mb-6 justify-center flex-col items-center text-gray-100">
-              <div className=" text-start">
+            <div className="firstrow w-full text-xl flex mb-6 justify-center flex-col  items-start font-bold">
+              <div className="">
                 {selectedCard ? (
                   <h2>
                     Editing Card :{" "}
                     {selectedCard.name.length > 10
-                      ? `${selectedCard.name.slice(0, 10)}...`
-                      : selectedCard.name}
+                      ? `${capitalizeFirstLetters(
+                          selectedCard.name.slice(0, 10)
+                        )}...`
+                      : capitalizeFirstLetters(selectedCard.name)}
                   </h2>
                 ) : (
                   <h2>Create Card</h2>
@@ -211,9 +213,9 @@ const CardModal = (props: {
             </div>
             <fieldset className="section-box flex flex-col gap-6 ">
               <legend className=" text-md font-light">Card Details</legend>
-              <div className="flex flex-row ">
+              <div className="flex flex-row  ">
                 {/* birinci bura */}
-                <div className="firstrow flex flex-row items-center">
+                <div className="firstrow flex flex-row w-full justify-between items-center">
                   {selectedCard ? (
                     <input
                       id="name"
@@ -222,7 +224,7 @@ const CardModal = (props: {
                       onChange={(e) => {
                         handlecardupdate(e);
                       }}
-                      className=" forminput"
+                      className=" forminput "
                     ></input>
                   ) : (
                     <input
@@ -232,7 +234,7 @@ const CardModal = (props: {
                       onChange={(e) => {
                         handleNewCardFieldUpdate(e);
                       }}
-                      className=" forminput"
+                      className=" forminput "
                     ></input>
                   )}
                   {/* toggle buraya */}
@@ -243,7 +245,7 @@ const CardModal = (props: {
                         animate={
                           !cardAsState?.archived ? "checked" : "unchecked"
                         }
-                        className="relative w-16 h-8 flex items-center flex-shrink-0 ml-4 p-1 rounded-full  cursor-pointer z-50"
+                        className="relative w-16 h-8 flex items-center flex-shrink-0 ml-4 p-1 rounded-full   cursor-pointer z-50"
                         variants={backgroundVariants}
                         onTap={cardArchivedChanged}
                       >
@@ -271,7 +273,8 @@ const CardModal = (props: {
               {selectedCard ? (
                 <textarea
                   id="description"
-                  className="forminput "
+                  placeholder="Description"
+                  className="forminput  "
                   value={cardAsState?.description}
                   onChange={(e) => {
                     handlecardupdate(e);
@@ -281,7 +284,8 @@ const CardModal = (props: {
               ) : (
                 <input
                   id="description"
-                  className="forminput "
+                  placeholder="Description"
+                  className="forminput  "
                   value={cardDesc}
                   onChange={(e) => {
                     handleNewCardFieldUpdate(e);
@@ -314,7 +318,7 @@ const CardModal = (props: {
 
             {selectedCard ? (
               <input
-                placeholder="Comment"
+                placeholder="Add comment"
                 value={newComment?.comment}
                 onChange={(e) => {
                   setNewComment({
@@ -322,7 +326,7 @@ const CardModal = (props: {
                     date: formatDateTime(),
                   } as CommentType);
                 }}
-                className="forminput placeholder:font-black "
+                className="forminput  "
               ></input>
             ) : null}
             {!selectedCard ? (
@@ -330,7 +334,7 @@ const CardModal = (props: {
                 id="savebutton"
                 type="submit"
                 disabled={cardName === "" ? true : false}
-                className="settings-button disabled:cursor-pointer:none "
+                className="settings-button  "
                 onClick={(e) => {
                   handleSaveNewCard(e);
                 }}
@@ -342,7 +346,7 @@ const CardModal = (props: {
                 id="addcomment"
                 type="submit"
                 disabled={newComment?.comment === "" ? true : false}
-                className=" settings-button dark:disabled:text-gray-600 disabled:hover:bg-none "
+                className=" settings-button "
                 onClick={(e) => {
                   handlecardupdate(e);
                 }}
