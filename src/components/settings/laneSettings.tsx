@@ -280,7 +280,7 @@ const LaneSettingsModal = (props: {
           </div>
         ) : null}
         <div
-          className="modalwindow dark:bg-gray-600"
+          className="modalwindow"
           onClick={(e) => {
             e.stopPropagation();
             setShowAddLaneModal(false);
@@ -310,7 +310,7 @@ const LaneSettingsModal = (props: {
             >
               {items.map((item) => (
                 <Reorder.Item key={item.id} value={item}>
-                  <div className="cardmain flex flex-row my-2 items-center w-full justify-between dark:bg-gray-600">
+                  <div className="cardmain flex flex-row my-2 bg- items-center w-full justify-between dark:bg-gray-600">
                     <DragIcon />
                     <div className="flex-grow">{item.name}</div>
                     <div>
