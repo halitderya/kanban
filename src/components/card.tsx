@@ -19,7 +19,7 @@ const CardComponent = (props: { card: Card; showModal: any; lane: Lane }) => {
 
   return (
     <motion.div onTap={handleClick} className="card ">
-      <div className="font-mono font-bold mb-2">
+      <div className="font-mono break-words font-bold mb-2">
         {props.card?.name.toUpperCase()}
       </div>{" "}
       <div className="mb-4">

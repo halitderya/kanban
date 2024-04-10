@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Card, CommentType } from "@/types/cardtype";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/app/store";
@@ -40,8 +40,8 @@ const backgroundVariants = {
 //////main function//////////
 
 const LaneSettingsModal = (props: {
-  setshowLaneSettingsModal: any;
-  showLaneSettingsModal: any;
+  setshowLaneSettingsModal: Dispatch<SetStateAction<boolean>>;
+  showLaneSettingsModal: boolean;
 }) => {
   const dispatch = useDispatch<AppDispatch>();
 
@@ -185,10 +185,10 @@ const LaneSettingsModal = (props: {
     });
   }
   /////
-  if (props.showLaneSettingsModal) {
+  if (1 === 1) {
     return (
       <div
-        className=" bg-transparent backdrop-blur-sm w-full h-full fixed flex items-center justify-center z-[1000]  "
+        className=" bg-transparent  backdrop-blur-sm w-full h-full fixed flex items-center justify-center z-[1000]  "
         onClick={(e) => handleoutsideclick(e)}
       >
         {showDeletionConfirmation && (
