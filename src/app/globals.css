@@ -68,7 +68,7 @@ body {
     @apply fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
 
     overflow-y-auto overflow-x-hidden   dark:bg-gray-600  h-auto gap-4
-    font-sans justify-between flex-col flex w-11/12 max-w-[400px]  rounded-lg 
+    font-sans justify-between flex-col flex w-11/12 max-w-[600px]  rounded-lg 
 
 
     p-2 flex-grow-0    bg-zinc-50 shadow-md drop-shadow-lg shadow-neutral-300
