@@ -35,7 +35,7 @@ body {
     @apply dark:bg-gray-600  w-full   shadow-gray-100 rounded-lg p-2 my-1 shadow-sm   bg-neutral-300 text-gray-900 dark:text-zinc-50;
   }
   .addlanemodal {
-    @apply shadow-xl fixed dark:bg-gray-600 dark:border-gray-200 p-6 overflow-y-auto overflow-x-hidden flex-grow-0 shadow-gray-400   bg-slate-200  font-sans justify-between flex-col flex w-96 border-solid border-4 rounded-lg border-gray-400 z-[1000];
+    @apply shadow-xl fixed dark:bg-gray-600 dark:border-gray-200 p-6 overflow-y-auto overflow-x-hidden flex-grow-0 shadow-gray-400   bg-slate-200  font-sans justify-between flex-col flex w-96 border-solid border-4 rounded-lg border-gray-400 z-[2000];
   }
   .forminput {
     @apply text-sm rounded-lg  border-2 border-solid block w-full p-2.5  bg-zinc-50  dark:border-zinc-50 dark:bg-gray-600 focus:outline-none;

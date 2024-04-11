@@ -7,7 +7,7 @@ const SettingsIcon = () => {
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+  }, [theme]);
 
   const fillColor = mounted
     ? theme === "dark"
