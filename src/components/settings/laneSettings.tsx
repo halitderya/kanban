@@ -191,6 +191,7 @@ const LaneSettingsModal = (props: {
         className=" bg-transparent  backdrop-blur-sm w-full h-full fixed flex items-center justify-center z-[1000]  "
         onClick={(e) => handleoutsideclick(e)}
       >
+        {/* DELETION CONFIRMATION STARTS HERE */}
         {showDeletionConfirmation && (
           <div className="addlanemodal ">
             {canDelete ? (
@@ -225,12 +226,15 @@ const LaneSettingsModal = (props: {
             {}
           </div>
         )}
+        {/* DELETION CONFIRMATION ENDS HERE */}
+
+        {/* ADD LANE MODAL STARTS HERE */}
         {showAddLaneModal ? (
           <div
             onClick={(e) => {
               e.stopPropagation();
             }}
-            className="addlanemodal"
+            className="addlanemodal border-test"
           >
             <h2 className="block mb-6 text-lg font-medium ">Add new lane</h2>
             <form>
@@ -279,9 +283,14 @@ const LaneSettingsModal = (props: {
             </form>
           </div>
         ) : null}
+
+        {/* ADD LANE MODAL ENDS HERE */}
+        {/* SETTINGS MAIN MODAL STARTS HERE */}
         <div
           className="modalwindow"
           onClick={(e) => {
+            console.log("clicked modalwindow");
+
             e.stopPropagation();
             setShowAddLaneModal(false);
             setShowDeletionConfirmation(false);
@@ -289,11 +298,13 @@ const LaneSettingsModal = (props: {
         >
           <fieldset className="section-box">
             <legend className="">Lane Settings</legend>
-            <div className="flex dark:bg-gray-600 flex-row w-full justify-between mb-2 flex-shrink-1">
+            <div className="flex dark:bg-gray-600 flex-row w-full justify-between mb-2 flex-shrink-1 z-[2000] ">
               <button
-                className="settings-button w-full"
+                className="settings-button w-full hover:bg-gray-600"
                 onClick={(e) => {
                   e.stopPropagation();
+                  console.log("clicked", showAddLaneModal);
+
                   setShowAddLaneModal(true);
                 }}
               >
@@ -388,6 +399,9 @@ const LaneSettingsModal = (props: {
         </div>
       </div>
     );
+    {
+      /* SETTINGS MAIN MODAL ENDS HERE */
+    }
   }
 
   return null;
