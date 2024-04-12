@@ -12,6 +12,7 @@ import {
 import { selectCard } from "@/features/card/selectedCardSlice";
 import { Lane } from "@/types/linetype";
 import { capitalizeFirstLetters } from "@/utils/capitalizefirstletter";
+import formatDateTime from "@/utils/date";
 
 const CardModal = (props: {
   setShowModal: any;
@@ -42,10 +43,12 @@ const CardModal = (props: {
   }, [cardAsState]);
 
   function handleoutsideclick() {
-    props.setShowModal(false);
-    setFirstLoad(true);
-    dispatch(selectCard(null));
-    dispatch(fetchCardDataThunk());
+    if (cardAsState?.name !== "") {
+      props.setShowModal(false);
+      setFirstLoad(true);
+      dispatch(selectCard(null));
+      dispatch(fetchCardDataThunk());
+    }
   }
   function handleSaveNewCard(e: React.SyntheticEvent): void {
     e.preventDefault();
@@ -61,12 +64,11 @@ const CardModal = (props: {
     dispatch(addCardThunk(newCard as Card))
       .then((response) => {
         console.log("response: ", response);
-        // Başarılı ekleme işlemi sonrası gereken işlemler burada yapılabilir.
       })
       .then(() => {
         setCardName("");
         setCardDesc("");
-        handleoutsideclick(); // Modal'ı kapat ve gerekli temizlik işlemlerini yap.
+        handleoutsideclick();
       });
   }
 
@@ -92,18 +94,6 @@ const CardModal = (props: {
     }
 
     setFirstLoad(false);
-  }
-
-  function formatDateTime() {
-    const now = new Date();
-    const hours = now.getHours().toString().padStart(2, "0");
-    const minutes = now.getMinutes().toString().padStart(2, "0");
-    const seconds = now.getSeconds().toString().padStart(2, "0");
-    const day = now.getDate().toString().padStart(2, "0");
-    const month = (now.getMonth() + 1).toString().padStart(2, "0");
-    const year = now.getFullYear();
-
-    return `${hours}:${minutes}:${seconds} ${day}-${month}-${year}`;
   }
 
   async function cardArchivedChanged() {
@@ -176,8 +166,8 @@ const CardModal = (props: {
     unchecked: { x: 0 },
   };
   const backgroundVariants = {
-    checked: { backgroundColor: "#22c55e" },
-    unchecked: { backgroundColor: "#d25555" },
+    unchecked: { backgroundColor: "#22c55e" },
+    checked: { backgroundColor: "#d25555" },
   };
 
   if (props.showModal) {
@@ -197,14 +187,14 @@ const CardModal = (props: {
           >
             <div className="firstrow w-full text-xl flex mb-6 justify-center flex-col  items-start font-bold">
               <div className="">
-                {selectedCard ? (
+                {cardAsState ? (
                   <h2>
                     Editing Card :{" "}
-                    {selectedCard.name.length > 10
+                    {cardAsState.name.length > 10
                       ? `${capitalizeFirstLetters(
-                          selectedCard.name.slice(0, 10)
+                          cardAsState.name.slice(0, 10)
                         )}...`
-                      : capitalizeFirstLetters(selectedCard.name)}
+                      : capitalizeFirstLetters(cardAsState.name)}
                   </h2>
                 ) : (
                   <h2>Create Card</h2>
@@ -216,10 +206,10 @@ const CardModal = (props: {
               <div className="flex flex-row  ">
                 {/* birinci bura */}
                 <div className="firstrow flex flex-row w-full justify-between items-center">
-                  {selectedCard ? (
+                  {cardAsState ? (
                     <input
                       id="name"
-                      type="text"
+                      autoComplete="off"
                       value={cardAsState?.name}
                       onChange={(e) => {
                         handlecardupdate(e);
@@ -229,6 +219,7 @@ const CardModal = (props: {
                   ) : (
                     <input
                       id="name"
+                      autoComplete="off"
                       type="text"
                       value={cardName}
                       onChange={(e) => {
@@ -239,7 +230,7 @@ const CardModal = (props: {
                   )}
                   {/* toggle buraya */}
 
-                  {selectedCard ? (
+                  {cardAsState ? (
                     <motion.div whileHover={{ scale: 1.1 }} className="">
                       <motion.div
                         animate={
@@ -275,6 +266,7 @@ const CardModal = (props: {
                   id="description"
                   placeholder="Description"
                   className="forminput  "
+                  autoComplete="off"
                   value={cardAsState?.description}
                   onChange={(e) => {
                     handlecardupdate(e);
@@ -285,6 +277,7 @@ const CardModal = (props: {
                 <input
                   id="description"
                   placeholder="Description"
+                  autoComplete="off"
                   className="forminput  "
                   value={cardDesc}
                   onChange={(e) => {
@@ -315,7 +308,6 @@ const CardModal = (props: {
                 ))}
               </fieldset>
             ) : null}
-
             {selectedCard ? (
               <input
                 placeholder="Add comment"
@@ -327,6 +319,7 @@ const CardModal = (props: {
                   } as CommentType);
                 }}
                 className="forminput  "
+                autoComplete="off"
               ></input>
             ) : null}
             {!selectedCard ? (
