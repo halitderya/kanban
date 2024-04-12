@@ -8,8 +8,6 @@ import {
   fetchCardDataThunk,
   populateAllCardsThunk,
   removeAllCardsThunk,
-  updateCard,
-  updateCardDataThunk,
 } from "@/features/card/cardSlice";
 import { selectCard } from "@/features/card/selectedCardSlice";
 import { current } from "@reduxjs/toolkit";
@@ -63,20 +61,36 @@ const LaneSettingsModal = (props: {
     useState<boolean>(false);
   const [canDelete, setCanDelete] = useState<boolean>(false);
   const [dbID, setDbID] = useState<string>("");
-
-  // useEffect(() => {
-  //   dispatch(fetchLaneDataThunk());
-  // }, [items]);
+  // const [tbClassesAsArray, setTbClassesAsArray] = useState<string[]>([
+  //   "transparent-background",
+  // ]);
+  const [tbClasses, setTbClasses] = useState<string>(
+    "transparent-background z-10"
+  );
 
   function handleoutsideclick(e: React.SyntheticEvent) {
-    props.setshowLaneSettingsModal(false);
-    setShowAddLaneModal(false);
+    if (showAddLaneModal) {
+      setShowAddLaneModal(false);
+      setTbClasses("transparent-background z-10");
+    } else {
+      props.setshowLaneSettingsModal(false);
+    }
     dispatch(fetchLaneDataThunk());
   }
 
   function DeleteConfirmed(e: React.SyntheticEvent) {
+    console.log("2b deleted: ", e);
+
     e.preventDefault();
-    dispatch(deleteSingleLaneThunk(dbID));
+    dispatch(deleteSingleLaneThunk(dbID)).then(() => {
+      dispatch(fetchLaneDataThunk()).then(() => {
+        setItems((currentItems) =>
+          currentItems.filter((item) => item.dbid !== dbID)
+        );
+      });
+    });
+
+    setShowDeletionConfirmation(false);
   }
 
   function HandleDeletability(id: number) {
@@ -95,6 +109,7 @@ const LaneSettingsModal = (props: {
       }
     }
   }
+
   ///immigrant functions
   function addDummyCards(
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -120,6 +135,9 @@ const LaneSettingsModal = (props: {
   }
 
   ///
+  // useEffect(() => {
+  //   dispatch(fetchLaneDataThunk());
+  // }, [items]);
 
   function LaneActiveChanged(lane: Lane) {
     const updatedlane: Lane = {
@@ -185,226 +203,229 @@ const LaneSettingsModal = (props: {
     });
   }
   /////
-  if (1 === 1) {
-    return (
+
+  return (
+    <>
       <div
-        className=" bg-transparent  backdrop-blur-sm w-full h-full fixed flex items-center justify-center z-[1000]  "
-        onClick={(e) => handleoutsideclick(e)}
+        // this div is blurry background
+        className={tbClasses}
+        onClick={(e) => {
+          handleoutsideclick(e);
+          e.stopPropagation;
+        }}
       >
-        {/* DELETION CONFIRMATION STARTS HERE */}
-        {showDeletionConfirmation && (
-          <div className="addlanemodal ">
-            {canDelete ? (
-              <div className="flex flex-col w-full">
-                <h3>Are you sure you want to delete this lane?</h3>
+        {" "}
+      </div>
+      {/* DELETION CONFIRMATION STARTS HERE */}
+      {showDeletionConfirmation && (
+        <div className="addlanemodal ">
+          {canDelete ? (
+            <div className="flex flex-col w-full">
+              <h3>Are you sure you want to delete this lane?</h3>
 
-                <div className="w-full flex space-between center mt-4 justify-around gap-">
-                  <button
-                    onClick={(e) => {
-                      DeleteConfirmed(e);
-                    }}
-                    className=" formsubmit min-w-24 bg-slate-400"
-                  >
-                    Yes
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowDeletionConfirmation(false);
-                      setCanDelete(false);
-                      setDbID("");
-                    }}
-                    className="formsubmit min-w-24 bg-slate-400"
-                  >
-                    No
-                  </button>
-                </div>
+              <div className="w-full flex space-between center mt-4 justify-around gap-">
+                <button
+                  onClick={(e) => {
+                    DeleteConfirmed(e);
+                  }}
+                  className="settings-button w-1/3"
+                >
+                  Yes
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowDeletionConfirmation(false);
+                    setCanDelete(false);
+                    setDbID("");
+                  }}
+                  className="settings-button w-1/3"
+                >
+                  No
+                </button>
               </div>
-            ) : (
-              <p>Lane has cards, hence cannot be deleted.</p>
-            )}
-            {}
-          </div>
-        )}
-        {/* DELETION CONFIRMATION ENDS HERE */}
-
-        {/* ADD LANE MODAL STARTS HERE */}
-        {showAddLaneModal ? (
-          <div
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-            className="addlanemodal border-test"
-          >
-            <h2 className="block mb-6 text-lg font-medium ">Add new lane</h2>
-            <form>
-              <label className="forminputlabel" htmlFor="inputnewlanedesc">
-                Lane Name
-              </label>
-              <input
-                required
-                className="forminput"
-                onChange={(e) => {
-                  setNewLaneName(e.target.value);
-                  handleFormEnable(newLaneDesc, e);
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-                value={newLaneName}
-              ></input>
-              <label className="forminputlabel" htmlFor="inputnewlanedesc">
-                Lane Description
-              </label>
-              <input
-                id="inputnewlanedesc"
-                className="forminput"
-                required
-                onChange={(e) => {
-                  setNewLaneDesc(e.target.value);
-                  handleFormEnable(newLaneName, e);
-                }}
-                value={newLaneDesc}
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-              ></input>
-
-              <input
-                className=" mt-4 self-end formsubmit disabled:font-extralight disabled:bg-gray-300 enabled:font-bold"
-                disabled={!submitEnabled}
-                value="Save Lane"
-                type="submit"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNewLaneAdded(e);
-                }}
-              ></input>
-            </form>
-          </div>
-        ) : null}
-
-        {/* ADD LANE MODAL ENDS HERE */}
-        {/* SETTINGS MAIN MODAL STARTS HERE */}
-        <div
-          className="modalwindow"
-          onClick={(e) => {
-            console.log("clicked modalwindow");
-
-            e.stopPropagation();
-            setShowAddLaneModal(false);
-            setShowDeletionConfirmation(false);
-          }}
-        >
-          <fieldset className="section-box">
-            <legend className="">Lane Settings</legend>
-            <div className="flex dark:bg-gray-600 flex-row w-full justify-between mb-2 flex-shrink-1 z-[2000] ">
-              <button
-                className="settings-button w-full hover:bg-gray-600"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  console.log("clicked", showAddLaneModal);
-
-                  setShowAddLaneModal(true);
-                }}
-              >
-                {" "}
-                Add New Lane
-              </button>
             </div>
+          ) : (
+            <p>Lane has cards, hence cannot be deleted.</p>
+          )}
+          {}
+        </div>
+      )}
+      {/* DELETION CONFIRMATION ENDS HERE */}
 
-            <Reorder.Group
-              className="w-full dark:bg-gray-600"
-              axis="y"
-              values={items}
-              onReorder={handleReorder}
+      {/* ADD LANE MODAL STARTS HERE */}
+      {showAddLaneModal ? (
+        <div className="addlanemodal">
+          <h2 className="block mb-6 text-lg font-medium  ">Add new lane</h2>
+          <form className="">
+            <label className="forminputlabel" htmlFor="inputnewlanename">
+              Lane Name
+            </label>
+            <input
+              autoComplete="off"
+              id="inputnewlanename"
+              required
+              className="forminput"
+              onChange={(e) => {
+                setNewLaneName(e.target.value);
+                handleFormEnable(newLaneDesc, e);
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+              value={newLaneName}
+            ></input>
+            <label className="forminputlabel" htmlFor="inputnewlanedesc">
+              Lane Description
+            </label>
+            <input
+              id="inputnewlanedesc"
+              autoComplete="off"
+              className="forminput"
+              required
+              onChange={(e) => {
+                setNewLaneDesc(e.target.value);
+                handleFormEnable(newLaneName, e);
+              }}
+              value={newLaneDesc}
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            ></input>
+
+            <input
+              className=" settings-button w-full mt-4 "
+              disabled={!submitEnabled}
+              value="Save Lane"
+              type="submit"
+              onClick={(e) => {
+                e.preventDefault();
+                handleNewLaneAdded(e);
+                handleoutsideclick(e);
+              }}
+            ></input>
+          </form>
+        </div>
+      ) : null}
+
+      {/* ADD LANE MODAL ENDS HERE */}
+      {/* SETTINGS MAIN MODAL STARTS HERE */}
+      <div
+        className="modalwindow z-20"
+        onClick={(e) => {
+          console.log("clicked modalwindow");
+
+          e.stopPropagation();
+          setShowAddLaneModal(false);
+          setShowDeletionConfirmation(false);
+        }}
+      >
+        <fieldset className="section-box">
+          <legend className="">Lane Settings</legend>
+          <div className="flex dark:bg-gray-600 flex-row w-full justify-between mb-2 flex-shrink-1 z-10 ">
+            <button
+              className="settings-button w-full"
+              onClick={(e) => {
+                e.stopPropagation();
+                console.log("clicked", showAddLaneModal);
+
+                setShowAddLaneModal(true);
+
+                setTbClasses("transparent-background z-30");
+              }}
             >
-              {items.map((item) => (
-                <Reorder.Item key={item.id} value={item}>
-                  <div className="cardmain flex flex-row my-2 bg- items-center w-full justify-between dark:bg-gray-600">
-                    <DragIcon />
-                    <div className="flex-grow">{item.name}</div>
-                    <div>
-                      <div>
-                        <motion.div
-                          key={item.dbid}
-                          animate={item.active ? "unchecked" : "checked"}
-                          className="relative w-16 h-8 flex items-center flex-shrink-0 ml-4 p-1 rounded-full  cursor-pointer z-50"
-                          variants={backgroundVariants}
-                          onTap={() => {
-                            LaneActiveChanged(item);
-                          }}
-                        >
-                          <motion.span
-                            key={item.id}
-                            className="w-8 h-6 bg-white rounded-full shadow-md flex justify-center items-center"
-                            layout
-                            variants={sliderVariants}
-                          >
-                            {item.active ? (
-                              <motion.div
-                                className="w-4 h-4 z-40"
-                                animate="unchecked"
-                              />
-                            ) : null}
-                          </motion.span>
-                        </motion.div>
-                      </div>
-                    </div>
+              {" "}
+              Add New Lane
+            </button>
+          </div>
 
-                    <div className="ml-2">
-                      {!item.default ? (
-                        <motion.img
-                          id={item.dbid.toString()}
-                          drag={false}
-                          onTap={(e) => {
-                            setShowDeletionConfirmation(true);
-                            HandleDeletability(item.id);
-                          }}
-                          alt="Delete Lane"
-                          whileHover={{ scale: 1.5 }}
-                          src="/svg/delete.svg"
-                        ></motion.img>
-                      ) : (
-                        <img
-                          {...(item.default
-                            ? {
-                                title:
-                                  "Default Lane cannot be deleted but can be disabled",
-                              }
-                            : null)}
-                          className="disabled"
-                          alt="Add New Card"
-                          src="/svg/delete_inactive.svg"
-                        ></img>
-                      )}
+          <Reorder.Group
+            className="w-full dark:bg-gray-600"
+            axis="y"
+            values={items}
+            onReorder={handleReorder}
+          >
+            {items.map((item) => (
+              <Reorder.Item key={item.id} value={item}>
+                <div className="cardmain flex flex-row my-2  items-center w-full justify-between dark:bg-gray-600">
+                  <DragIcon />
+                  <div className="flex-grow">{item.name}</div>
+                  <div>
+                    <div>
+                      <motion.div
+                        key={item.dbid}
+                        animate={item.active ? "unchecked" : "checked"}
+                        className="relative w-16 h-8 flex items-center flex-shrink-0 ml-4 p-1 rounded-full  cursor-pointer "
+                        variants={backgroundVariants}
+                        onTap={() => {
+                          LaneActiveChanged(item);
+                        }}
+                      >
+                        <motion.span
+                          key={item.id}
+                          className="w-8 h-6 bg-white rounded-full shadow-md flex justify-center items-center"
+                          layout
+                          variants={sliderVariants}
+                        >
+                          {item.active ? (
+                            <motion.div
+                              className="w-4 h-4 z-40"
+                              animate="unchecked"
+                            />
+                          ) : null}
+                        </motion.span>
+                      </motion.div>
                     </div>
                   </div>
-                </Reorder.Item>
-              ))}
-            </Reorder.Group>
-          </fieldset>
-          <fieldset className=" section-box">
-            <legend>Default Settings</legend>
-            <button className=" settings-button" onClick={addDefaultLanes}>
-              Reset to default lanes
-            </button>
-            <button className=" settings-button" onClick={deleteAllCards}>
-              Delete all cards
-            </button>
-            <button className=" settings-button" onClick={addDummyCards}>
-              Add 5 dummy cards
-            </button>
-          </fieldset>
-        </div>
-      </div>
-    );
-    {
-      /* SETTINGS MAIN MODAL ENDS HERE */
-    }
-  }
 
-  return null;
+                  <div className="ml-2">
+                    {!item.default ? (
+                      <motion.img
+                        id={item.dbid.toString()}
+                        drag={false}
+                        onTap={(e) => {
+                          setShowDeletionConfirmation(true);
+                          HandleDeletability(item.id);
+                        }}
+                        alt="Delete Lane"
+                        whileHover={{ scale: 1.5 }}
+                        src="/svg/delete.svg"
+                      ></motion.img>
+                    ) : (
+                      <img
+                        {...(item.default
+                          ? {
+                              title:
+                                "Default Lane cannot be deleted but can be disabled",
+                            }
+                          : null)}
+                        className="disabled"
+                        alt="Add New Card"
+                        src="/svg/delete_inactive.svg"
+                      ></img>
+                    )}
+                  </div>
+                </div>
+              </Reorder.Item>
+            ))}
+          </Reorder.Group>
+        </fieldset>
+        <fieldset className=" section-box">
+          <legend>Default Settings</legend>
+          <button className=" settings-button" onClick={addDefaultLanes}>
+            Reset to default lanes
+          </button>
+          <button className=" settings-button" onClick={deleteAllCards}>
+            Delete all cards
+          </button>
+          <button className=" settings-button" onClick={addDummyCards}>
+            Add 5 dummy cards
+          </button>
+        </fieldset>
+      </div>
+      {/* SETTINGS MAIN MODAL ENDS HERE */}
+    </>
+  );
 };
 
 export default LaneSettingsModal;
