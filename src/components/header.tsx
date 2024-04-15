@@ -37,7 +37,7 @@ const Header = (props: {
 
   return (
     <div className=" header flex justify-center min-[410px]:justify-between  z-[1] center cursor-pointer p-2 items-center mb-4 w-full rounded-lg gap-x-8 border-solid dark:bg-gray-600  shadow-neutral-300 drop-shadow-md">
-      <div className="h-full flex max-md:hidden border-2 w-64 max-w-xl  dark:border-gray-100 dark:border-opacity-40     dark:bg-gray-600  flex-row bg-zinc-50 rounded-md flex-shrink-0  flex-grow  items-center  ">
+      <div className="h-full flex max-md:hidden border-2 w-64 max-w-xl    dark:border-gray-100 dark:border-opacity-40     dark:bg-gray-600  flex-row bg-zinc-50 rounded-md flex-shrink-0  flex-grow  items-center  ">
         <SearchIcon></SearchIcon>
         <input
           onChange={(e) => {
@@ -50,7 +50,7 @@ const Header = (props: {
       <div className="  self-center content-center justify-center pt-1 align-middle h-full w-auto hidden min-[410px]:flex  text-lg text-center text-nowrap flex-shrink  ">
         Kanban Board
       </div>
-      <div className="flex w-auto   flex-row items-center  flex-shrink-0 flex-grow-0 justify-between  box-content overflow-hidden max-sm:gap-1 gap-4 ">
+      <div className="flex min-[410px]:w-auto  w-full  flex-row items-center  flex-shrink-0 flex-grow-0 justify-between  box-content overflow-hidden max-sm:gap-1 gap-4 ">
         <div
           className=""
           onClick={() => {
@@ -59,6 +59,7 @@ const Header = (props: {
         >
           <ArchivedIcon></ArchivedIcon>
         </div>
+
         <div
           className=""
           onClick={() => {
@@ -67,9 +68,7 @@ const Header = (props: {
         >
           <SettingsIcon></SettingsIcon>
         </div>
-        <div className="">
-          <ProfileIcon></ProfileIcon>
-        </div>
+
         <div className=" pr-0 md:pr-4">
           <ThemeSwitch />
         </div>

@@ -7,7 +7,7 @@
     "description": "This is a task for the alpha project.",
     "lane": 2,
     "lane_was":1,
-    "owner": "Owner 5",
+    "owner": "Demo user",
     "comments": [
       {
         "comment": "Great progress! Keep it up.",
@@ -28,7 +28,7 @@
     "lane": 2,
     "lane_was":1,
 
-    "owner": "Owner 2",
+    "owner": "Demo user",
     "comments": [
       {
         "comment": "Found a major bug in module X.",
@@ -49,7 +49,7 @@
     "lane": 2,
     "lane_was":1,
 
-    "owner": "Owner 6",
+    "owner": "Demo user",
     "comments": []
   },
   {
@@ -61,7 +61,7 @@
     "lane": 2,
     "lane_was":1,
 
-    "owner": "Owner 4",
+    "owner": "Demo user",
     "comments": [
       {
         "comment": "Completed the quarterly analysis.",
@@ -78,7 +78,7 @@
     "lane": 2,
     "lane_was":1,
 
-    "owner": "Owner 8",
+    "owner": "Demo user",
     "comments": [
       {
         "comment": "Interviews scheduled for next week.",

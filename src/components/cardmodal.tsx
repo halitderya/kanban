@@ -28,7 +28,7 @@ const CardModal = (props: {
   const [cardName, setCardName] = useState<string>("");
   const [cardDesc, setCardDesc] = useState<string>("");
   const [cardAsState, setCardAsState] = useState<Card | null>(null);
-  const [firstLoad, setFirstLoad] = useState<boolean>(true);
+  //const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [newComment, setNewComment] = useState<CommentType | null>({
     comment: "",
     date: "",
@@ -38,14 +38,16 @@ const CardModal = (props: {
     setCardAsState(selectedCard);
   }, [selectedCard]);
 
-  useEffect(() => {
-    savecard();
-  }, [cardAsState]);
+  // useEffect(() => {
+  //   savecard();
+  // }, [cardAsState]);
 
   function handleoutsideclick() {
     if (cardAsState?.name !== "") {
+      savecard(undefined, "handleoutsideclick");
+
       props.setShowModal(false);
-      setFirstLoad(true);
+      //setFirstLoad(true);
       dispatch(selectCard(null));
       dispatch(fetchCardDataThunk());
     }
@@ -57,7 +59,7 @@ const CardModal = (props: {
       description: cardDesc,
       created: Date.now().toString(),
       archived: false,
-      owner: "owner1",
+      owner: "Demo user",
       lane: props.lane.id,
     };
 
@@ -72,7 +74,7 @@ const CardModal = (props: {
       });
   }
 
-  async function savecard(e?: React.SyntheticEvent) {
+  async function savecard(e?: React.SyntheticEvent, source?: string) {
     if (selectedCard) {
       const updated = {
         ...(selectedCard as Card),
@@ -88,12 +90,9 @@ const CardModal = (props: {
         lane: cardAsState?.lane,
         name: cardAsState?.name,
       };
-
-      //we want to aviod run dispatch if the card is empty
-      !firstLoad ? dispatch(updateCardDataThunk(updated as Card)) : null;
+      source === "handleoutsideclick" &&
+        dispatch(updateCardDataThunk(updated as Card));
     }
-
-    setFirstLoad(false);
   }
 
   async function cardArchivedChanged() {
@@ -166,8 +165,8 @@ const CardModal = (props: {
     unchecked: { x: 0 },
   };
   const backgroundVariants = {
-    unchecked: { backgroundColor: "#22c55e" },
-    checked: { backgroundColor: "#d25555" },
+    checked: { backgroundColor: "#22c55e" },
+    unchecked: { backgroundColor: "#d25555" },
   };
 
   if (props.showModal) {
