@@ -79,14 +79,14 @@ const LaneSettingsModal = (props: {
   }
 
   function DeleteConfirmed(e: React.SyntheticEvent) {
-    console.log("2b deleted: ", e);
-
     e.preventDefault();
-    dispatch(deleteSingleLaneThunk(dbID)).then(() => {
+    dispatch(deleteSingleLaneThunk(dbID)).then((result) => {
       dispatch(fetchLaneDataThunk()).then(() => {
-        setItems((currentItems) =>
-          currentItems.filter((item) => item.dbid !== dbID)
-        );
+        if (result.payload === 200) {
+          setItems((currentItems) =>
+            currentItems.filter((item) => item.id.toString() !== dbID)
+          );
+        }
       });
     });
 
@@ -101,7 +101,7 @@ const LaneSettingsModal = (props: {
     if (hasCards !== undefined) {
       setCanDelete(false);
     } else {
-      const tobedeleted = laneArray.find((l) => l.id === id)?.dbid;
+      const tobedeleted = laneArray.find((l) => l.id === id)?.id.toString();
 
       if (tobedeleted !== undefined) {
         setCanDelete(true);
@@ -168,7 +168,7 @@ const LaneSettingsModal = (props: {
 
       const newLane = {
         id: lastID,
-        dbid: "",
+        _id: "",
         name: newLaneName,
         description: newLaneDesc,
         order: lastOrder,
@@ -327,7 +327,6 @@ const LaneSettingsModal = (props: {
               className="settings-button w-full"
               onClick={(e) => {
                 e.stopPropagation();
-                console.log("clicked", showAddLaneModal);
 
                 setShowAddLaneModal(true);
 
@@ -353,7 +352,7 @@ const LaneSettingsModal = (props: {
                   <div>
                     <div>
                       <motion.div
-                        key={item.dbid}
+                        key={item.id}
                         animate={item.active ? "unchecked" : "checked"}
                         className="relative w-16 h-8 flex items-center flex-shrink-0 ml-4 p-1 rounded-full  cursor-pointer "
                         variants={backgroundVariants}
@@ -378,33 +377,35 @@ const LaneSettingsModal = (props: {
                     </div>
                   </div>
 
-                  <div className="ml-2">
-                    {!item.default ? (
-                      <motion.img
-                        id={item.dbid.toString()}
-                        drag={false}
-                        onTap={(e) => {
-                          setShowDeletionConfirmation(true);
-                          HandleDeletability(item.id);
-                        }}
-                        alt="Delete Lane"
-                        whileHover={{ scale: 1.5 }}
-                        src="/svg/delete.svg"
-                      ></motion.img>
-                    ) : (
-                      <img
-                        {...(item.default
-                          ? {
-                              title:
-                                "Default Lane cannot be deleted but can be disabled",
-                            }
-                          : null)}
-                        className="disabled"
-                        alt="Add New Card"
-                        src="/svg/delete_inactive.svg"
-                      ></img>
-                    )}
-                  </div>
+                  {
+                    <div className="ml-2">
+                      {!item.default ? (
+                        <motion.img
+                          id={item._id.toString()}
+                          drag={false}
+                          onTap={(e) => {
+                            setShowDeletionConfirmation(true);
+                            HandleDeletability(item.id);
+                          }}
+                          alt="Delete Lane"
+                          whileHover={{ scale: 1.5 }}
+                          src="/svg/delete.svg"
+                        ></motion.img>
+                      ) : (
+                        <img
+                          {...(item.default
+                            ? {
+                                title:
+                                  "Default Lane cannot be deleted but can be disabled",
+                              }
+                            : null)}
+                          className="disabled"
+                          alt="Add New Card"
+                          src="/svg/delete_inactive.svg"
+                        ></img>
+                      )}
+                    </div>
+                  }
                 </div>
               </Reorder.Item>
             ))}
