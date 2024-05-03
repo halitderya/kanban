@@ -1,186 +1,153 @@
- import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import {Card} from "../../types/cardtype"
-import { child, get, getDatabase, push, ref,remove,set, update } from 'firebase/database';
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { Card } from "../../types/cardtype";
+import {
+  child,
+  get,
+  getDatabase,
+  push,
+  ref,
+  remove,
+  set,
+  update,
+} from "firebase/database";
 import { db } from "../../utils/firebase";
+import {
+  apiGetRequestHandler,
+  apiPostRequestHandler,
+  apiDeleteRequestHandler,
+} from "@/utils/APIRequests";
 
+const API_KEY: string = process.env.NEXT_PUBLIC_API_KEY ?? "";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+// export const updateCard = async (endpoint = "", updatedCard: Card) => {
 
-const fetchData = async (endpoint = '') => {
-  try {
+//   const dbRef = ref(db, endpoint + updatedCard.id);
 
-    const snapshot = await get(child(ref(db), endpoint));
-    if (snapshot.exists()) {
-      let data = snapshot.val();
+//   try {
+//     await update(dbRef, { ...updatedCard });
+//     return updatedCard;
+//   } catch (error) {
+//     console.error("error update", error);
+//     return null;
+//   }
+// };
 
-      return data; 
-    } else {
-      console.log("Data not available");
-      return null; 
-    }
-  } catch (error) {
-    console.error(error);
-    return null; 
+export const removeAllCardsThunk = createAsyncThunk(
+  "data/deleteAllCards",
+  async (_, thunkAPI) => {
+    await apiDeleteRequestHandler("/cards/deleteAllCards");
   }
-};
-
-export const updateCard = async (endpoint = "", updatedCard: Card) => {
-  const dbRef = ref(db, endpoint + updatedCard.id);
-
-  try {
-    await update(dbRef, { ...updatedCard });
-    return updatedCard; 
-  } catch (error) {
-    console.error('error update', error);
-    return null; 
-  }
-};
-
-export const removeAllCardsThunk= createAsyncThunk(
-'data/deleteAllCards',
-async(_,thunkAPI)=>{
-
-  await remove(ref(db,'kanbanBoard/cards')).then((response)=>{
-console.log("response: " ,response);
-
-    
-  })
-}
-
-
 );
 
-
-export const updateCardDataThunk=createAsyncThunk(
-
-'data/updateCardData',
-async(updatedCard:Card ,thunkAPI)=>{
-
-  
- const data=  await updateCard("kanbanBoard/cards/",updatedCard);
-  return (data as Card);
-}
-); 
-
-
-
-
+export const updateCardDataThunk = createAsyncThunk(
+  "data/updateCardData",
+  async (updatedCard: Card, thunkAPI) => {
+    return await apiPostRequestHandler(
+      "/cards/editCard",
+      updatedCard,
+      Number(updatedCard.id)
+    );
+  }
+);
 
 interface Updates {
   [key: string]: Card;
 }
-//here we read data from json to upload as card, since we don't know what ID firebase will assign, we fetch assigned ID to assign the value of 
+//here we read data from json to upload as card, since we don't know what ID firebase will assign, we fetch assigned ID to assign the value of
 // newCardKey then updating the card with this ID. We don't update redux store here. fetching also required.
 export const populateAllCardsThunk = createAsyncThunk(
-  'data/populateAllCards',
+  "data/populateAllCards",
   async (_, thunkAPI) => {
-    const data: Card[] = await fetch("/card.json").then((response) => response.json());
-    
+    const data: Card[] = await fetch("/card.json").then((response) =>
+      response.json()
+    );
+
     const db = getDatabase();
     const updates: Updates = {};
     data.forEach((card: Card) => {
       // Generate a new key for each card
-      const newCardKey = push(child(ref(db), 'kanbanBoard/cards')).key;
+      const newCardKey = push(child(ref(db), "kanbanBoard/cards")).key;
 
       if (newCardKey === null) {
-        console.error('Failed to generate a new key for a card');
+        console.error("Failed to generate a new key for a card");
         return; // Skip this iteration
       }
 
       card.id = newCardKey;
-      updates['/kanbanBoard/cards/' + newCardKey] = card;
+      updates["/kanbanBoard/cards/" + newCardKey] = card;
     });
 
     return await update(ref(db), updates)
       .then(() => {
-        console.log('Synchronization succeeded');
-
+        console.log("Synchronization succeeded");
       })
 
       .catch((error) => {
-        console.error('Synchronization failed', error);
+        console.error("Synchronization failed", error);
       });
-  },
+  }
 );
 
 // Thunk to fetch all data
- export const fetchCardDataThunk = createAsyncThunk(
-  'data/fetchAllCards',
+export const fetchCardDataThunk = createAsyncThunk(
+  "data/fetchAllCards",
   async (_, thunkAPI) => {
-    const data = await fetchData("/kanbanBoard/cards");
+    const data = await apiGetRequestHandler("/cards/allCards", "");
+
     return data;
-  },
-  
+  }
 );
 //Thunk to add new Card
 
 export const addCardThunk = createAsyncThunk(
-  'data/addCard',
+  "data/addCard",
   async (newCard: Card, thunkAPI) => {
-    const db = getDatabase();
-    const newCardKey = push(child(ref(db), 'kanbanBoard/cards')).key;
-    if (newCardKey === null) {
-      console.error('Failed to generate a new key for a card');
-      return null;
+    if (newCard) {
+      return await apiPostRequestHandler("/cards/addCard", newCard);
     }
-    newCard.id = newCardKey;
-    await set(ref(db, 'kanbanBoard/cards/' + newCardKey), newCard);
-    return newCard;
-  },
-);
-
-
-
-// Thunk to fetch data by ID
-export const fetchCardIDThunk = createAsyncThunk<
-Card,
-number
-
->(
-  'data/fetchById',
-  async (id, thunkAPI) => {
-    const data = await fetchData(`/kanbanBoard/cards/${id}`);
-    return data;
   }
 );
 
+// Thunk to fetch data by ID
+// export const fetchCardIDThunk = createAsyncThunk<Card, number>(
+//   "data/fetchById",
+//   async (id, thunkAPI) => {
+//     const data = await fetchData(`/kanbanBoard/cards/${id}`);
+//     return data;
+//   }
+// );
+
 const initialState = {
   data: null,
-  dataWithID:null,
-  loading: 'idle',
+  dataWithID: null,
+  loading: "idle",
 } as DataState;
-
 
 interface DataState {
   data: { [key: string]: Card } | null;
-  loading: 'idle' | 'pending' | 'succeeded' | 'failed';
-  dataWithID:Card | null;
+  loading: "idle" | "pending" | "succeeded" | "failed";
+  dataWithID: Card | null;
 }
 
-
 export const cardSlice = createSlice({
-  name: 'cardData',
+  name: "cardData",
   initialState,
-  reducers: {
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchCardDataThunk.fulfilled, (state, action) => {
         // Set the state with the fetched data
-        
+
         state.data = action.payload;
-        
       })
-     .addCase(fetchCardDataThunk.rejected, (state,action)=>{
+      .addCase(fetchCardDataThunk.rejected, (state, action) => {})
+      // .addCase(fetchCardIDThunk.fulfilled, (state, action) => {
+      //   state.dataWithID = action.payload;
+      // })
 
-    })
-    .addCase(fetchCardIDThunk.fulfilled, (state, action) => {
-        state.dataWithID = action.payload;}) 
-
-    .addCase(updateCardDataThunk.fulfilled, (state, action) => {
-
-
-
+      .addCase(updateCardDataThunk.fulfilled, (state, action) => {
         const updatedCard = action.payload;
         if (updatedCard && updatedCard.id) {
           if (!state.data) {
@@ -190,14 +157,6 @@ export const cardSlice = createSlice({
           }
         }
       })
-    .addCase(populateAllCardsThunk.fulfilled, (state, action) => {
-
-        
-      })
-      
-      
-      ;
+      .addCase(populateAllCardsThunk.fulfilled, (state, action) => {});
   },
 });
-
-  
