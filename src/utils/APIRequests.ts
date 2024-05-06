@@ -5,7 +5,7 @@ const API_KEY: string = process.env.NEXT_PUBLIC_API_KEY ?? "";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export const apiGetRequestHandler = async (
   endpoint: string,
-  param?: string
+  caller: string
 ) => {
   try {
     const snapshot = await fetch(API_URL + endpoint, {
@@ -29,53 +29,39 @@ export const apiGetRequestHandler = async (
     return null;
   }
 };
+
 export const apiPostRequestHandler = async <T>(
   endpoint: string,
-  payload?: T,
-  param?: number
-): Promise<T | null | undefined> => {
-  let snapshot;
+  payload?: T
+): Promise<Card | Lane | null | undefined> => {
+  //let snapshot: Response;
 
   try {
-    console.log("endpoint: ", endpoint, "payload: ", payload, "param", param);
-
-    if (param && API_URL) {
-      snapshot = await fetch(API_URL + endpoint + "?id=" + param, {
+    if (API_URL) {
+      const snapshot = await fetch(API_URL + endpoint, {
         method: "POST",
-
         headers: {
           "x-api-key": API_KEY,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
       });
-    } else if (API_URL) {
-      snapshot = await fetch(API_URL + endpoint, {
-        method: "POST",
 
-        headers: {
-          "x-api-key": API_KEY,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-    }
-
-    if (snapshot)
       if (snapshot.ok) {
-        let data = await snapshot.json();
-        console.log("data to be returned: ", data);
-
-        return data;
+        const data = await snapshot.json(); // JSON olarak veri al
+        // Veriyi Card veya Lane olarak döndürmeye çalış
+        return data as Card | Lane;
       } else {
         console.log("Data not available");
         return null;
       }
+    }
   } catch (error) {
     console.error(error);
     return null;
   }
 };
+
 export const apiDeleteRequestHandler = async <T>(
   endpoint: string,
   param: string

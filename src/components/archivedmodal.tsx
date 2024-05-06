@@ -10,14 +10,6 @@ import { capitalizeFirstLetters } from "@/utils/capitalizefirstletter";
 import UnarchivedIcon from "@/components/iconcomponents/unarchivedicon";
 import { AppDispatch, RootState } from "@/app/store";
 import { AnimatePresence, motion } from "framer-motion";
-const sliderVariants = {
-  checked: { x: 24 },
-  unchecked: { x: 0 },
-};
-const backgroundVariants = {
-  checked: { backgroundColor: "#22c55e" },
-  unchecked: { backgroundColor: "#d25555" },
-};
 
 export const ArchivedModal = (props: {
   showArchivedModal: boolean;
@@ -40,9 +32,9 @@ export const ArchivedModal = (props: {
   }, [cardsData]);
   async function cardArchivedChanged(c: Card) {
     const updated = { ...c, archived: !c.archived };
-    console.log(updated);
 
-    dispatch(updateCardDataThunk(updated as Card));
+    await dispatch(updateCardDataThunk(updated as Card));
+    await dispatch(fetchCardDataThunk());
   }
   return (
     <div
@@ -55,9 +47,9 @@ export const ArchivedModal = (props: {
         onClick={(e) => {
           e.stopPropagation();
         }}
-        className="modalwindow "
+        className="modalwindow w-3/4 h-auto "
       >
-        <fieldset className="section-box flex flex-row">
+        <fieldset className="section-box w-auto flex flex-wrap flex-row">
           <legend
             onClick={() => console.log(cardsData, "cardsdata")}
             className=""

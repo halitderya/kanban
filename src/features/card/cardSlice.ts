@@ -10,12 +10,14 @@ import {
   set,
   update,
 } from "firebase/database";
-import { db } from "../../utils/firebase";
+// import { db } from "../../utils/firebase";
 import {
   apiGetRequestHandler,
   apiPostRequestHandler,
   apiDeleteRequestHandler,
 } from "@/utils/APIRequests";
+import { Lane } from "@/types/linetype";
+import { useDebounce } from "@/hooks/useDebounce";
 
 const API_KEY: string = process.env.NEXT_PUBLIC_API_KEY ?? "";
 
@@ -44,11 +46,11 @@ export const removeAllCardsThunk = createAsyncThunk(
 export const updateCardDataThunk = createAsyncThunk(
   "data/updateCardData",
   async (updatedCard: Card, thunkAPI) => {
-    return await apiPostRequestHandler(
-      "/cards/editCard",
-      updatedCard,
-      Number(updatedCard.id)
+    const value = await apiPostRequestHandler<Card | Lane>(
+      "/cards/editCard/?id=" + updatedCard.id,
+      updatedCard as Card
     );
+    return value;
   }
 );
 
@@ -94,7 +96,10 @@ export const populateAllCardsThunk = createAsyncThunk(
 export const fetchCardDataThunk = createAsyncThunk(
   "data/fetchAllCards",
   async (_, thunkAPI) => {
-    const data = await apiGetRequestHandler("/cards/allCards", "");
+    const data = await apiGetRequestHandler(
+      "/cards/allCards",
+      "fetchCardDataThunk"
+    );
 
     return data;
   }
@@ -105,7 +110,8 @@ export const addCardThunk = createAsyncThunk(
   "data/addCard",
   async (newCard: Card, thunkAPI) => {
     if (newCard) {
-      return await apiPostRequestHandler("/cards/addCard", newCard);
+      const data = await apiPostRequestHandler("/cards/addCard", newCard);
+      return data;
     }
   }
 );
@@ -130,6 +136,9 @@ interface DataState {
   loading: "idle" | "pending" | "succeeded" | "failed";
   dataWithID: Card | null;
 }
+function isCard(obj: any): obj is Card {
+  return "id" in obj && "name" in obj && "lane" in obj; // Bu örnek, Card tipini tanımlayan özelliklere göre düzenlenebilir
+}
 
 export const cardSlice = createSlice({
   name: "cardData",
@@ -143,20 +152,7 @@ export const cardSlice = createSlice({
         state.data = action.payload;
       })
       .addCase(fetchCardDataThunk.rejected, (state, action) => {})
-      // .addCase(fetchCardIDThunk.fulfilled, (state, action) => {
-      //   state.dataWithID = action.payload;
-      // })
 
-      .addCase(updateCardDataThunk.fulfilled, (state, action) => {
-        const updatedCard = action.payload;
-        if (updatedCard && updatedCard.id) {
-          if (!state.data) {
-            state.data = { [updatedCard.id]: updatedCard };
-          } else {
-            state.data[updatedCard.id] = updatedCard;
-          }
-        }
-      })
       .addCase(populateAllCardsThunk.fulfilled, (state, action) => {});
   },
 });

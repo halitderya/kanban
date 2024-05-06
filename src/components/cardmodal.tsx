@@ -13,6 +13,7 @@ import { selectCard } from "@/features/card/selectedCardSlice";
 import { Lane } from "@/types/linetype";
 import { capitalizeFirstLetters } from "@/utils/capitalizefirstletter";
 import formatDateTime from "@/utils/date";
+import { apiPostRequestHandler } from "@/utils/APIRequests";
 
 const CardModal = (props: {
   setShowModal: any;
@@ -38,21 +39,27 @@ const CardModal = (props: {
     setCardAsState(selectedCard);
   }, [selectedCard]);
 
-  // useEffect(() => {
-  //   savecard();
-  // }, [cardAsState]);
-
-  function handleoutsideclick() {
-    if (cardAsState?.name !== "") {
-      savecard(undefined, "handleoutsideclick");
-
-      props.setShowModal(false);
-      //setFirstLoad(true);
-      dispatch(selectCard(null));
-      dispatch(fetchCardDataThunk());
+  async function handleoutsideclick(e: React.SyntheticEvent) {
+    if (cardAsState) {
+      // means updating an existing card
+      if (
+        cardAsState?.name !== selectedCard?.name ||
+        cardAsState.description !== selectedCard.description ||
+        cardAsState.archived !== selectedCard.archived
+      ) {
+        // something changed,card to be updated.
+        cardAsState.name !== "" &&
+          (await handlesaveExistingCard("handleoutsideclick"));
+      }
     }
+    // wrap things up
+
+    props.setShowModal(false);
+    await dispatch(selectCard(null));
+    await dispatch(fetchCardDataThunk());
   }
-  function handleSaveNewCard(e: React.SyntheticEvent): void {
+
+  async function handleSaveNewCard(e: React.SyntheticEvent): Promise<void> {
     e.preventDefault();
     const newCard = {
       name: cardName,
@@ -63,18 +70,55 @@ const CardModal = (props: {
       lane: props.lane.id,
     };
 
-    dispatch(addCardThunk(newCard as Card))
-      .then((response) => {
-        console.log("response: ", response);
-      })
+    await dispatch(addCardThunk(newCard as Card))
       .then(() => {
         setCardName("");
         setCardDesc("");
-        handleoutsideclick();
+      })
+
+      .then(() => {
+        handleoutsideclick(e);
       });
   }
 
-  async function savecard(e?: React.SyntheticEvent, source?: string) {
+  async function handleAddCommentCard(e: React.SyntheticEvent) {
+    e.preventDefault();
+
+    // Yeni yorumun geçerli olup olmadığını kontrol edin
+    if (newComment && newComment.comment.trim() !== "") {
+      const payload = {
+        id: cardAsState?.id,
+        comments: newComment.comment,
+      };
+
+      try {
+        const response = await apiPostRequestHandler(
+          "/cards/addComment",
+          payload
+        );
+
+        if (response) {
+          setCardAsState((previousState) => {
+            if (previousState === null) return null;
+            return {
+              ...previousState,
+              comments: [...(previousState.comments || []), newComment],
+            };
+          });
+
+          setNewComment({ comment: "", date: "" });
+        } else {
+          console.error(
+            "Failed to add comment due to API error or invalid response"
+          );
+        }
+      } catch (error) {
+        console.error("Failed to add comment:", error);
+      }
+    }
+  }
+
+  async function handlesaveExistingCard(source?: string) {
     if (selectedCard) {
       const updated = {
         ...(selectedCard as Card),
@@ -82,16 +126,13 @@ const CardModal = (props: {
           cardAsState?.description !== undefined
             ? cardAsState?.description
             : "",
-        comments:
-          cardAsState?.comments !== undefined
-            ? cardAsState?.comments
-            : new Array<CommentType>(),
+
         archived: cardAsState?.archived,
         lane: cardAsState?.lane,
         name: cardAsState?.name,
       };
       source === "handleoutsideclick" &&
-        dispatch(updateCardDataThunk(updated as Card));
+        (await dispatch(updateCardDataThunk(updated as Card)));
     }
   }
 
@@ -103,7 +144,7 @@ const CardModal = (props: {
 
       return updatedState;
     });
-    savecard();
+    handlesaveExistingCard();
   }
 
   function handleNewCardFieldUpdate(e: React.SyntheticEvent) {
@@ -118,7 +159,7 @@ const CardModal = (props: {
         break;
     }
   }
-  function handlecardupdate(e: React.SyntheticEvent) {
+  function handleExistingCardUpdate(e: React.SyntheticEvent) {
     e.preventDefault();
     switch (((e as React.SyntheticEvent).target as HTMLInputElement).id) {
       case "description":
@@ -133,20 +174,7 @@ const CardModal = (props: {
             : null
         );
         break;
-      case "addcomment":
-        if (!cardAsState || !newComment) return;
 
-        const newComments: CommentType[] = cardAsState.comments
-          ? [...cardAsState.comments, newComment]
-          : [newComment];
-
-        setCardAsState((current) =>
-          current ? { ...current, comments: newComments } : null
-        );
-
-        setNewComment({ comment: "", date: "" });
-        const scr = document.scrollingElement;
-        break;
       case "name":
         setCardAsState((current) =>
           current
@@ -172,10 +200,11 @@ const CardModal = (props: {
   if (props.showModal) {
     return (
       <>
+        {/* outer transparent div */}
         <div
           className="bg-transparent backdrop-blur-sm w-full h-full fixed flex items-center justify-center z-40"
-          onClick={() => {
-            handleoutsideclick();
+          onClick={(e) => {
+            handleoutsideclick(e);
           }}
         >
           <form
@@ -211,7 +240,7 @@ const CardModal = (props: {
                       autoComplete="off"
                       value={cardAsState?.name}
                       onChange={(e) => {
-                        handlecardupdate(e);
+                        handleExistingCardUpdate(e);
                       }}
                       className=" forminput "
                     ></input>
@@ -268,7 +297,7 @@ const CardModal = (props: {
                   autoComplete="off"
                   value={cardAsState?.description}
                   onChange={(e) => {
-                    handlecardupdate(e);
+                    handleExistingCardUpdate(e);
                   }}
                   // type="text"
                 ></textarea>
@@ -287,7 +316,9 @@ const CardModal = (props: {
               )}
             </fieldset>
 
-            {selectedCard && cardAsState?.comments !== undefined ? (
+            {selectedCard &&
+            cardAsState?.comments !== undefined &&
+            cardAsState.comments.length > 0 ? (
               <fieldset className="section-box flex flex-col gap-4  dark:bg-gray-600 dark:shadow-sm dark:shadow-gray-100">
                 <legend className="text-md font-light">Comments</legend>
                 {cardAsState?.comments.map((c, index) => (
@@ -299,7 +330,7 @@ const CardModal = (props: {
                       type="text"
                       value={c.comment}
                       onChange={(e) => {
-                        handlecardupdate(e);
+                        handleExistingCardUpdate(e);
                       }}
                     />
                     <div className="text-xs font-thin self-end">{c.date}</div>
@@ -340,7 +371,7 @@ const CardModal = (props: {
                 disabled={newComment?.comment === "" ? true : false}
                 className=" settings-button "
                 onClick={(e) => {
-                  handlecardupdate(e);
+                  handleAddCommentCard(e);
                 }}
               >
                 Add Comment
