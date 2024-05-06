@@ -35,9 +35,9 @@ const LaneElement = (props: { lane: Lane; setShow: any; order: number }) => {
 
   //////VARIABLES////////////
 
-  useEffect(() => {
-    dispatch(fetchCardDataThunk());
-  }, [lanedata]);
+  // useEffect(() => {
+  //   dispatch(fetchCardDataThunk("lane.tsx"));
+  // }, []);
 
   const handleCardDropped = (e: PointerEvent, c: Card) => {
     const theElement = window.document

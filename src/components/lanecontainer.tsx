@@ -6,6 +6,7 @@ import { AppDispatch, RootState } from "../app/store";
 import { Lane } from "@/types/linetype";
 import LaneElement from "@/components/lane";
 import { motion } from "framer-motion";
+import { fetchCardDataThunk } from "@/features/card/cardSlice";
 
 const Lanecontainer = (props: { show: any }) => {
   const lanedata: Lane[] = useSelector(
@@ -15,7 +16,9 @@ const Lanecontainer = (props: { show: any }) => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    dispatch(fetchLaneDataThunk());
+    dispatch(fetchLaneDataThunk()).then(() => {
+      dispatch(fetchCardDataThunk());
+    });
   }, []);
 
   return (
