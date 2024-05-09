@@ -1,20 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Lane } from "../../types/linetype";
-import {
-  onValue,
-  ref,
-  get,
-  child,
-  getDatabase,
-  push,
-  update,
-  remove,
-} from "firebase/database";
-import { db } from "../../utils/firebase";
+
 import {
   apiDeleteRequestHandler,
   apiGetRequestHandler,
   apiPostRequestHandler,
+  apiPutRequestHandler,
 } from "@/utils/APIRequests";
 
 const API_BASE_URL =
@@ -44,30 +35,12 @@ const fetchData = async (endpoint: string = "/lanes") => {
     return null;
   }
 };
-// const fetchData = async (endpoint = '') => {
-//   try {
-//     const snapshot = await get(child(ref(db), endpoint));
 
-//     if (snapshot.exists()) {
-//       let data = snapshot.val();
-//       return data;
-//     } else {
-//       console.error("Data not available");
-//       return null;
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     return null;
-//   }
-// };
-interface Updates {
-  [key: string]: Lane;
-}
 export const addNewLaneThunk = createAsyncThunk(
   "data/addNewLane",
 
   async (lane: Lane, thunkAPI) => {
-    if (lane) return await apiPostRequestHandler("/lanes/addLane/", lane, "");
+    if (lane) return await apiPostRequestHandler("/lanes/addLane/", lane);
   }
 );
 
@@ -76,7 +49,7 @@ export const deleteSingleLaneThunk = createAsyncThunk(
   async (laneDBID: string, thunkAPI) => {
     const response = await apiDeleteRequestHandler(
       "/lanes/deleteLane/",
-      laneDBID
+      "?id=" + laneDBID
     );
 
     return response;
@@ -86,36 +59,7 @@ export const populateDefaultLanesThunk = createAsyncThunk(
   "data/populateDefaultLanes",
 
   async (_, thunkAPI) => {
-    const data: Lane[] = await fetch("/lane.json").then((response) =>
-      response.json()
-    );
-
-    const db = getDatabase();
-    const updates: Updates = {};
-    //all data to be deleted before lanes populated
-
-    await remove(ref(db, "kanbanBoard/lanes")).then(() => {
-      data.forEach((lane: Lane) => {
-        // Generate a new key for each card
-        const newLaneKey = push(child(ref(db), "kanbanBoard/lanes")).key;
-
-        if (newLaneKey === null) {
-          console.error("Failed to generate a new key for a card");
-          return; // Skip this iteration
-        }
-
-        lane.dbid = newLaneKey;
-        updates["/kanbanBoard/lanes/" + newLaneKey] = lane;
-      });
-    });
-    return await update(ref(db), updates)
-      .then(() => {
-        console.log("Synchronization succeeded");
-      })
-
-      .catch((error) => {
-        console.error("Synchronization failed", error);
-      });
+    return await apiPutRequestHandler("/settings/resetDefaultLanes");
   }
 );
 
@@ -127,22 +71,24 @@ export const fetchLaneDataThunk = createAsyncThunk(
   }
 );
 
-export const updateLane = async (endpoint = "", updatedLane: Lane) => {
-  const dbRef = ref(db, endpoint + updatedLane.dbid);
+export const updateLaneActiveThunk = createAsyncThunk(
+  "data/updateLaneActiveThunk",
 
-  try {
-    await update(dbRef, { ...updatedLane });
-    return updatedLane;
-  } catch (error) {
-    console.error("error update", error);
-    return null;
+  async (updatedLane: Lane, thunkAPI) => {
+    const data = await apiPostRequestHandler(
+      "/lanes/changeLaneArchive",
+      updatedLane
+    );
+    return data as Lane;
   }
-};
-
+);
 export const updateLaneDataThunk = createAsyncThunk(
   "data/updateLaneData",
-  async (updatedLane: Lane, thunkAPI) => {
-    const data = await updateLane("kanbanBoard/lanes/", updatedLane);
+  async (updatedLanes: Lane[], thunkAPI) => {
+    const data = await apiPostRequestHandler(
+      "/lanes/updateLane/",
+      updatedLanes
+    );
     return data as Lane;
   }
 );

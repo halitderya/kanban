@@ -1,20 +1,11 @@
-import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Card } from "../../types/cardtype";
-import {
-  child,
-  get,
-  getDatabase,
-  push,
-  ref,
-  remove,
-  set,
-  update,
-} from "firebase/database";
-// import { db } from "../../utils/firebase";
+
 import {
   apiGetRequestHandler,
   apiPostRequestHandler,
   apiDeleteRequestHandler,
+  apiPutRequestHandler,
 } from "@/utils/APIRequests";
 import { Lane } from "@/types/linetype";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -23,23 +14,10 @@ const API_KEY: string = process.env.NEXT_PUBLIC_API_KEY ?? "";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-// export const updateCard = async (endpoint = "", updatedCard: Card) => {
-
-//   const dbRef = ref(db, endpoint + updatedCard.id);
-
-//   try {
-//     await update(dbRef, { ...updatedCard });
-//     return updatedCard;
-//   } catch (error) {
-//     console.error("error update", error);
-//     return null;
-//   }
-// };
-
 export const removeAllCardsThunk = createAsyncThunk(
   "data/deleteAllCards",
   async (_, thunkAPI) => {
-    await apiDeleteRequestHandler("/cards/deleteAllCards");
+    return await apiDeleteRequestHandler("/cards/deleteAllCards");
   }
 );
 
@@ -62,33 +40,8 @@ interface Updates {
 export const populateAllCardsThunk = createAsyncThunk(
   "data/populateAllCards",
   async (_, thunkAPI) => {
-    const data: Card[] = await fetch("/card.json").then((response) =>
-      response.json()
-    );
-
-    const db = getDatabase();
-    const updates: Updates = {};
-    data.forEach((card: Card) => {
-      // Generate a new key for each card
-      const newCardKey = push(child(ref(db), "kanbanBoard/cards")).key;
-
-      if (newCardKey === null) {
-        console.error("Failed to generate a new key for a card");
-        return; // Skip this iteration
-      }
-
-      card.id = newCardKey;
-      updates["/kanbanBoard/cards/" + newCardKey] = card;
-    });
-
-    return await update(ref(db), updates)
-      .then(() => {
-        console.log("Synchronization succeeded");
-      })
-
-      .catch((error) => {
-        console.error("Synchronization failed", error);
-      });
+    const data = await apiPostRequestHandler("/settings/createdefaultcards");
+    return data;
   }
 );
 
@@ -116,15 +69,6 @@ export const addCardThunk = createAsyncThunk(
   }
 );
 
-// Thunk to fetch data by ID
-// export const fetchCardIDThunk = createAsyncThunk<Card, number>(
-//   "data/fetchById",
-//   async (id, thunkAPI) => {
-//     const data = await fetchData(`/kanbanBoard/cards/${id}`);
-//     return data;
-//   }
-// );
-
 const initialState = {
   data: null,
   dataWithID: null,
@@ -137,7 +81,7 @@ interface DataState {
   dataWithID: Card | null;
 }
 function isCard(obj: any): obj is Card {
-  return "id" in obj && "name" in obj && "lane" in obj; // Bu örnek, Card tipini tanımlayan özelliklere göre düzenlenebilir
+  return "id" in obj && "name" in obj && "lane" in obj;
 }
 
 export const cardSlice = createSlice({

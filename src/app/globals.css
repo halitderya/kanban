@@ -78,4 +78,7 @@ body {
   .transparent-background {
     @apply bg-transparent top-0 left-0 w-dvw h-dvh  backdrop-blur-sm  fixed flex items-center justify-center;
   }
+  .toast {
+    @apply absolute bottom-0 right-0 bg-white text-black p-4 rounded shadow-lg transition-transform duration-500 ease-out;
+  }
 }

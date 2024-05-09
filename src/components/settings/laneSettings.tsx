@@ -1,25 +1,31 @@
 "use client";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Card, CommentType } from "@/types/cardtype";
+import { Card } from "@/types/cardtype";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/app/store";
-import { Reorder, motion, useDragControls } from "framer-motion";
+import { useTheme } from "next-themes";
+
+import { Reorder, motion } from "framer-motion";
 import {
   fetchCardDataThunk,
   populateAllCardsThunk,
   removeAllCardsThunk,
 } from "@/features/card/cardSlice";
-import { selectCard } from "@/features/card/selectedCardSlice";
-import { current } from "@reduxjs/toolkit";
+
 import { Lane } from "@/types/linetype";
 import {
   addNewLaneThunk,
   deleteSingleLaneThunk,
   fetchLaneDataThunk,
   populateDefaultLanesThunk,
+  updateLaneActiveThunk,
   updateLaneDataThunk,
 } from "@/features/lane/laneSlice";
 import DragIcon from "../iconcomponents/dragicon";
+import useConfirm from "../../hooks/useConfirm";
+import { apiDeleteRequestHandler } from "@/utils/APIRequests";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 ////declarations
 
@@ -42,6 +48,7 @@ const LaneSettingsModal = (props: {
   showLaneSettingsModal: boolean;
 }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const { theme } = useTheme();
 
   const lanedata: { [key: string]: Lane } | null = useSelector(
     (state: RootState) => state.lanedata.data
@@ -52,108 +59,36 @@ const LaneSettingsModal = (props: {
     (state: RootState) => state.carddata.data
   );
 
+  const [originalOrder, setOriginalOrder] = useState(laneArray);
+  const [showResetDialog, setShowResetDialog] = useState<boolean>(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
+  const [showDeleteAllCardsDialog, setshowDeleteAllCardsDialog] =
+    useState<boolean>(false);
   const [items, setItems] = useState(laneArray);
   const [showAddLaneModal, setShowAddLaneModal] = useState<boolean>(false);
   const [newLaneName, setNewLaneName] = useState<string>("");
   const [newLaneDesc, setNewLaneDesc] = useState<string>("");
   const [submitEnabled, setSubmitEnabled] = useState<boolean>(false);
-  const [showDeletionConfirmation, setShowDeletionConfirmation] =
-    useState<boolean>(false);
-  const [canDelete, setCanDelete] = useState<boolean>(false);
-  const [dbID, setDbID] = useState<string>("");
-  // const [tbClassesAsArray, setTbClassesAsArray] = useState<string[]>([
-  //   "transparent-background",
-  // ]);
-  const [tbClasses, setTbClasses] = useState<string>(
-    "transparent-background z-10"
-  );
-
-  function handleoutsideclick(e: React.SyntheticEvent) {
+  const [tbClasses, setTbClasses] = useState<string>("transparent-background");
+  ///////////////////
+  async function handleoutsideclick(e: React.SyntheticEvent) {
     if (showAddLaneModal) {
       setShowAddLaneModal(false);
       setTbClasses("transparent-background z-10");
     } else {
       props.setshowLaneSettingsModal(false);
+      setTbClasses("transparent-background z-5");
+    }
+
+    if (items !== originalOrder) {
+      if (originalOrder.length === items.length)
+        await dispatch(updateLaneDataThunk(items));
     }
     dispatch(fetchLaneDataThunk());
   }
+  /////////////////
 
-  function DeleteConfirmed(e: React.SyntheticEvent) {
-    e.preventDefault();
-    dispatch(deleteSingleLaneThunk(dbID)).then((result) => {
-      dispatch(fetchLaneDataThunk()).then(() => {
-        if (result.payload === 200) {
-          setItems((currentItems) =>
-            currentItems.filter((item) => item.id.toString() !== dbID)
-          );
-        }
-      });
-    });
-
-    setShowDeletionConfirmation(false);
-  }
-
-  function HandleDeletability(id: number) {
-    const cardArray = carddata ? Object.values(carddata) : [];
-
-    const hasCards = cardArray.find((c) => c.lane === id);
-
-    if (hasCards !== undefined) {
-      setCanDelete(false);
-    } else {
-      const tobedeleted = laneArray.find((l) => l.id === id)?.id.toString();
-
-      if (tobedeleted !== undefined) {
-        setCanDelete(true);
-        setDbID(tobedeleted);
-      }
-    }
-  }
-
-  ///immigrant functions
-  function addDummyCards(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ): void {
-    dispatch(populateAllCardsThunk()).then(() => {
-      dispatch(fetchCardDataThunk());
-    });
-  }
-
-  function addDefaultLanes(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ): void {
-    dispatch(populateDefaultLanesThunk()).then(() => {
-      dispatch(fetchLaneDataThunk());
-    });
-  }
-  function deleteAllCards(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ): void {
-    dispatch(removeAllCardsThunk()).then(() => {
-      dispatch(fetchCardDataThunk());
-    });
-  }
-
-  ///
-  // useEffect(() => {
-  //   dispatch(fetchLaneDataThunk());
-  // }, [items]);
-
-  function LaneActiveChanged(lane: Lane) {
-    const updatedlane: Lane = {
-      ...lane,
-      active: !lane.active,
-    };
-
-    setItems((currentItems) =>
-      currentItems.map((item) => (item.id === lane.id ? updatedlane : item))
-    );
-    dispatch(updateLaneDataThunk(updatedlane)).then(() => {
-      dispatch(fetchLaneDataThunk());
-    });
-  }
-
-  function handleNewLaneAdded(e: React.SyntheticEvent) {
+  async function handleNewLaneAdded(e: React.SyntheticEvent) {
     e.stopPropagation();
 
     if (newLaneName !== "" && newLaneDesc !== "") {
@@ -176,14 +111,143 @@ const LaneSettingsModal = (props: {
         default: false,
       };
 
-      dispatch(addNewLaneThunk(newLane)).then((e) => {
-        setItems((currentItems) => [...currentItems, e.meta.arg]);
-      });
+      await dispatch(addNewLaneThunk(newLane))
+        .then((e) => {
+          setItems((currentItems) => [...currentItems, e.meta.arg]);
+          setOriginalOrder((currentItems) => [...currentItems, e.meta.arg]);
+        })
+        .then(() => {
+          setTbClasses("transparent-background z-10");
+        });
     } else {
       console.error("error 1204");
       return;
     }
+    await dispatch(fetchLaneDataThunk());
   }
+  async function HandleDeletability(id: number) {
+    const cardArray = carddata ? Object.values(carddata) : [];
+    const hasCards = cardArray.some((card) => card.lane === id);
+    if (hasCards) {
+      toast.error("Lane has cards, cannot delete.", {
+        position: "top-right",
+        theme: theme,
+        autoClose: 2000,
+      });
+    } else {
+      setShowDeleteDialog(true);
+      const confirmed = await confirmDelete();
+      setShowDeleteDialog(false);
+      if (confirmed) {
+        const tobedeleted = laneArray.find((l) => l.id === id)?.id.toString();
+
+        if (tobedeleted !== undefined) {
+          dispatch(deleteSingleLaneThunk(tobedeleted)).then((result) => {
+            if (result.payload == 200) {
+              dispatch(fetchLaneDataThunk()).then(() => {
+                fetchCardDataThunk();
+              });
+              toast.success("Lane Deleted", {
+                position: "top-right",
+                theme: theme,
+                autoClose: 2000,
+              });
+            }
+          });
+        }
+      }
+    }
+  }
+
+  const [DeleteConfirmationDialog, confirmDelete] = useConfirm(
+    "Confirm Delete",
+    "Are you sure you want to delete this lane?"
+  );
+  const [ResetConfirmationDialog, confirmReset] = useConfirm(
+    "Confirm Reset",
+    "Reset all lanes to default? This will also cause all cards to deleted!"
+  );
+  const [DeleteAllCardsDialog, confirmDeleteAllCards] = useConfirm(
+    "Confirm Delete",
+    "Are you sure you want to delete all cards?"
+  );
+
+  async function handleResetLanes() {
+    setShowResetDialog(true);
+    const confirmed = await confirmReset();
+    setShowResetDialog(false);
+    if (confirmed) {
+      await dispatch(populateDefaultLanesThunk());
+      dispatch(fetchLaneDataThunk()).then(() => {
+        toast.success("Reset successful!", {
+          theme: theme,
+          autoClose: 2000,
+        });
+      });
+    }
+  }
+  ///immigrant functions
+  function addDummyCards(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ): void {
+    dispatch(populateAllCardsThunk()).then((res) => {
+      if (res.meta.requestStatus == "fulfilled") {
+        dispatch(fetchLaneDataThunk()).then(() => {
+          dispatch(fetchCardDataThunk()).then(() => {
+            toast.success("Dummy cards added", {
+              theme: theme,
+              autoClose: 2000,
+            });
+          });
+        });
+      }
+    });
+  }
+
+  useEffect(() => {
+    if (lanedata) {
+      const updatedLaneArray = Object.values(lanedata);
+      setItems(updatedLaneArray);
+      setOriginalOrder(updatedLaneArray);
+    }
+  }, [lanedata]);
+
+  async function deleteAllCards(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ): Promise<void> {
+    setshowDeleteAllCardsDialog(true);
+    const deleteAllCardsConfirmed = await confirmDeleteAllCards();
+    setshowDeleteAllCardsDialog(false);
+    if (deleteAllCardsConfirmed) {
+      dispatch(removeAllCardsThunk()).then((res) => {
+        if (res.meta.requestStatus == "fulfilled") {
+          dispatch(fetchLaneDataThunk()).then(() => {
+            dispatch(fetchCardDataThunk()).then(() => {
+              toast.success("Cards deleted", {
+                theme: theme,
+                autoClose: 2000,
+              });
+            });
+          });
+        }
+      });
+    }
+  }
+
+  function LaneActiveChanged(lane: Lane) {
+    const updatedlane: Lane = {
+      ...lane,
+      active: !lane.active,
+    };
+
+    setItems((currentItems) =>
+      currentItems.map((item) => (item.id === lane.id ? updatedlane : item))
+    );
+    dispatch(updateLaneActiveThunk(updatedlane)).then(() => {
+      dispatch(fetchLaneDataThunk());
+    });
+  }
+
   function handleFormEnable(otherprop: string, e: React.SyntheticEvent) {
     if (otherprop !== "" && (e.target as HTMLInputElement).value !== "") {
       setSubmitEnabled(true);
@@ -191,16 +255,14 @@ const LaneSettingsModal = (props: {
       setSubmitEnabled(false);
     }
   }
+
+  // sorunlu fonksiyon
   function handleReorder(newOrder: Lane[]) {
     const updatedLanes = newOrder.map((lane, index) => ({
       ...lane,
       order: index,
     }));
     setItems(updatedLanes);
-
-    updatedLanes.forEach((lane) => {
-      dispatch(updateLaneDataThunk(lane));
-    });
   }
   /////
 
@@ -216,46 +278,15 @@ const LaneSettingsModal = (props: {
       >
         {" "}
       </div>
-      {/* DELETION CONFIRMATION STARTS HERE */}
-      {showDeletionConfirmation && (
-        <div className="addlanemodal ">
-          {canDelete ? (
-            <div className="flex flex-col w-full">
-              <h3>Are you sure you want to delete this lane?</h3>
-
-              <div className="w-full flex space-between center mt-4 justify-around gap-">
-                <button
-                  onClick={(e) => {
-                    DeleteConfirmed(e);
-                  }}
-                  className="settings-button w-1/3"
-                >
-                  Yes
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowDeletionConfirmation(false);
-                    setCanDelete(false);
-                    setDbID("");
-                  }}
-                  className="settings-button w-1/3"
-                >
-                  No
-                </button>
-              </div>
-            </div>
-          ) : (
-            <p>Lane has cards, hence cannot be deleted.</p>
-          )}
-          {}
-        </div>
-      )}
-      {/* DELETION CONFIRMATION ENDS HERE */}
+      <ToastContainer />
+      {showDeleteDialog && <DeleteConfirmationDialog />}
+      {}
+      {showResetDialog && <ResetConfirmationDialog />}
+      {showDeleteAllCardsDialog && <DeleteAllCardsDialog />}
 
       {/* ADD LANE MODAL STARTS HERE */}
       {showAddLaneModal ? (
-        <div className="addlanemodal">
+        <div className="addlanemodal z-40">
           <h2 className="block mb-6 text-lg font-medium  ">Add new lane</h2>
           <form className="">
             <label className="forminputlabel" htmlFor="inputnewlanename">
@@ -301,7 +332,6 @@ const LaneSettingsModal = (props: {
               onClick={(e) => {
                 e.preventDefault();
                 handleNewLaneAdded(e);
-                handleoutsideclick(e);
               }}
             ></input>
           </form>
@@ -313,11 +343,8 @@ const LaneSettingsModal = (props: {
       <div
         className="modalwindow z-20"
         onClick={(e) => {
-          console.log("clicked modalwindow");
-
           e.stopPropagation();
           setShowAddLaneModal(false);
-          setShowDeletionConfirmation(false);
         }}
       >
         <fieldset className="section-box">
@@ -384,7 +411,7 @@ const LaneSettingsModal = (props: {
                           id={item._id.toString()}
                           drag={false}
                           onTap={(e) => {
-                            setShowDeletionConfirmation(true);
+                            // setShowDeletionConfirmation(true);
                             HandleDeletability(item.id);
                           }}
                           alt="Delete Lane"
@@ -413,7 +440,10 @@ const LaneSettingsModal = (props: {
         </fieldset>
         <fieldset className=" section-box">
           <legend>Default Settings</legend>
-          <button className=" settings-button" onClick={addDefaultLanes}>
+          <button
+            className=" settings-button"
+            onClick={() => handleResetLanes()}
+          >
             Reset to default lanes
           </button>
           <button className=" settings-button" onClick={deleteAllCards}>

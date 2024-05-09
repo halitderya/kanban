@@ -48,8 +48,7 @@ export const apiPostRequestHandler = async <T>(
       });
 
       if (snapshot.ok) {
-        const data = await snapshot.json(); // JSON olarak veri al
-        // Veriyi Card veya Lane olarak döndürmeye çalış
+        const data = await snapshot.json();
         return data as Card | Lane;
       } else {
         console.log("Data not available");
@@ -61,13 +60,30 @@ export const apiPostRequestHandler = async <T>(
     return null;
   }
 };
-
+export const apiPutRequestHandler = async <T>(endpoint: string) => {
+  if (endpoint) {
+    return fetch(API_URL + endpoint, {
+      method: "PUT",
+      headers: {
+        "x-api-key": API_KEY,
+      },
+    })
+      .then((response) => {
+        return response.status;
+      })
+      .catch((error) => {
+        return error;
+      });
+  }
+};
 export const apiDeleteRequestHandler = async <T>(
   endpoint: string,
-  param: string
+  param: string = ""
 ) => {
-  if (param && API_URL) {
-    return fetch(API_URL + endpoint + "?id=" + param, {
+  if (endpoint && API_URL) {
+    console.log("hits here apiurl: ", API_URL, "endpoint: ", endpoint);
+
+    return await fetch(API_URL + endpoint + param, {
       method: "DELETE",
       headers: {
         "x-api-key": API_KEY,
@@ -79,7 +95,5 @@ export const apiDeleteRequestHandler = async <T>(
       .catch((error) => {
         return error;
       });
-
-    // fetch(API_URL+tobeDeleted)
   }
 };

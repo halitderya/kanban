@@ -67,7 +67,11 @@ const LaneElement = (props: { lane: Lane; setShow: any; order: number }) => {
         lane: Number(laneId),
       };
 
-      dispatch(updateCardDataThunk(updated)).then((action) => {});
+      dispatch(updateCardDataThunk(updated))
+        .then((action) => {})
+        .then(() => {
+          dispatch(fetchCardDataThunk());
+        });
     }
   };
 
