@@ -86,7 +86,7 @@ export const updateLaneDataThunk = createAsyncThunk(
   "data/updateLaneData",
   async (updatedLanes: Lane[], thunkAPI) => {
     const data = await apiPostRequestHandler(
-      "/lanes/updateLane/",
+      "/lanes/reorderLanes/",
       updatedLanes
     );
     return data as Lane;
